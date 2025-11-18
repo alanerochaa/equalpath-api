@@ -4,7 +4,9 @@ import com.equalpath.domain.Usuario;
 import com.equalpath.dto.UsuarioRequestDTO;
 import com.equalpath.dto.UsuarioResponseDTO;
 import com.equalpath.exception.NotFoundException;
+import com.equalpath.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,11 +18,15 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class UsuarioService {
 
-    private final UsuarioRepository4 usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
+    // =========================================
+    // CREATE
+    // =========================================
     @Transactional
-    public UsuarioResponseDTO criar(UsuarioRequestDTO dto) {
+    public UsuarioResponseDTO criar(@NotNull UsuarioRequestDTO dto) {
         Usuario usuario = new Usuario();
+
         usuario.setNome(dto.nome());
         usuario.setSobrenome(dto.sobrenome());
         usuario.setEmail(dto.email());
@@ -28,61 +34,79 @@ public class UsuarioService {
         usuario.setEstado(dto.estado());
         usuario.setObjetivoCarreira(dto.objetivoCarreira());
         usuario.setStatusPerfil(dto.statusPerfil());
-        usuario.setDtCadastro(LocalDate.now());
+        usuario.setDtCadastro(LocalDate.now()); // sistema define data de cadastro
 
-        usuario = usuarioRepository.save(usuario);
-        return toResponse(usuario);
+        Usuario salvo = usuarioRepository.save(usuario);
+        return mapToResponse(salvo);
     }
 
+    // =========================================
+    // READ by ID
+    // =========================================
     @Transactional(readOnly = true)
     public UsuarioResponseDTO buscarPorId(Long id) {
-        Usuario usuario = getById(id);
-        return toResponse(usuario);
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado: " + id));
+
+        return mapToResponse(usuario);
     }
 
+    // =========================================
+    // LIST paginado + filtro por nome/sobrenome
+    // =========================================
     @Transactional(readOnly = true)
     public Page<UsuarioResponseDTO> listar(String nome, Pageable pageable) {
-        Page<Usuario> page;
+        Page<Usuario> pagina;
 
         if (nome != null && !nome.isBlank()) {
-            page = usuarioRepository
-                    .findByNomeContainingIgnoreCaseOrSobrenomeContainingIgnoreCase(nome, nome, pageable);
+            pagina = usuarioRepository
+                    .findByNomeContainingIgnoreCaseOrSobrenomeContainingIgnoreCase(
+                            nome, nome, pageable
+                    );
         } else {
-            page = usuarioRepository.findAll(pageable);
+            pagina = usuarioRepository.findAll(pageable);
         }
 
-        return page.map(this::toResponse);
+        return pagina.map(this::mapToResponse);
     }
 
+    // =========================================
+    // UPDATE
+    // =========================================
     @Transactional
-    public UsuarioResponseDTO atualizar(Long id, UsuarioRequestDTO dto) {
-        Usuario usuario = getById(id);
+    public UsuarioResponseDTO atualizar(Long id, @NotNull UsuarioRequestDTO dto) {
+
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado: " + id));
 
         usuario.setNome(dto.nome());
         usuario.setSobrenome(dto.sobrenome());
+        usuario.setEmail(dto.email());
         usuario.setTelefone(dto.telefone());
         usuario.setEstado(dto.estado());
         usuario.setObjetivoCarreira(dto.objetivoCarreira());
         usuario.setStatusPerfil(dto.statusPerfil());
-        // email geralmente não muda, mas se quiser:
-        // usuario.setEmail(dto.email());
+        // dtCadastro não é alterado no update
 
-        usuario = usuarioRepository.save(usuario);
-        return toResponse(usuario);
+        Usuario atualizado = usuarioRepository.save(usuario);
+        return mapToResponse(atualizado);
     }
 
+    // =========================================
+    // DELETE
+    // =========================================
     @Transactional
     public void excluir(Long id) {
-        Usuario usuario = getById(id);
-        usuarioRepository.delete(usuario);
+        if (!usuarioRepository.existsById(id)) {
+            throw new NotFoundException("Usuário não encontrado: " + id);
+        }
+        usuarioRepository.deleteById(id);
     }
 
-    private Usuario getById(Long id) {
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado para o id " + id));
-    }
-
-    private UsuarioResponseDTO toResponse(Usuario usuario) {
+    // =========================================
+    // MAPEAMENTO ENTITY -> DTO
+    // =========================================
+    private UsuarioResponseDTO mapToResponse(@NotNull Usuario usuario) {
         return new UsuarioResponseDTO(
                 usuario.getId(),
                 usuario.getNome(),

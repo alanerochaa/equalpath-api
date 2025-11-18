@@ -1,6 +1,7 @@
 package com.equalpath.domain;
 
-import com.equalpath.domain.enums.*;
+import com.equalpath.domain.enums.ObjetivoCarreira;
+import com.equalpath.domain.enums.StatusPerfil;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +11,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "USUARIO")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,8 +20,8 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idUsuario")
-    private Long id;
+    @Column(name = "IDUSUARIO")
+    private Long id;   // <- usamos id no Java, IDUSUARIO na tabela
 
     @Column(nullable = false, length = 100)
     private String nome;

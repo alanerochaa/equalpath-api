@@ -1,11 +1,14 @@
 package com.equalpath.controller;
 
+import com.equalpath.dto.AuthRequestDTO;
+import com.equalpath.dto.AuthResponseDTO;
 import com.equalpath.security.JwtTokenService;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,17 +16,22 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationManager authManager;
-    private final JwtTokenService tokenService;
-
-    public record AuthRequest(@NotBlank String username, @NotBlank String password) {}
-    public record AuthResponse(String token) {}
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenService jwtTokenService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                request.username(), request.password());
-        authManager.authenticate(authentication);
+    public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody AuthRequestDTO request) {
 
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.username(),
+                        request.password()
+                )
+        );
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String token = jwtTokenService.generateToken(userDetails.getUsername());
+
+        return ResponseEntity.ok(new AuthResponseDTO(token));
     }
 }
