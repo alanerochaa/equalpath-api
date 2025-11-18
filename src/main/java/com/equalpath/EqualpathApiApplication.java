@@ -9,5 +9,4 @@ public class EqualpathApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(EqualpathApiApplication.class, args);
 	}
-
 }
