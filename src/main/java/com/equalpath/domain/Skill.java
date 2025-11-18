@@ -1,18 +1,20 @@
 package com.equalpath.domain;
 
 import com.equalpath.domain.enums.CategoriaSkill;
+import com.equalpath.domain.enums.NivelTrilha;
 import com.equalpath.domain.enums.TipoSkill;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
-
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "SKILL")
 @Getter @Setter
-@NoArgsConstructor @AllArgsConstructor @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Skill {
 
     @Id
@@ -20,23 +22,30 @@ public class Skill {
     @Column(name = "idSkill")
     private Long id;
 
-    @NotBlank
-    @Size(max = 100)
+    @Column(nullable = false, length = 100)
     private String nome;
 
-    @Size(max = 500)
+    @Column(length = 500)
     private String descricao;
 
-    @Size(max = 20)
-    private String nivel;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private NivelTrilha nivel;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 30)
+    @Column(nullable = false, length = 20)
     private CategoriaSkill categoria;
 
     private LocalDate ultimoAcesso;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20)
+    @Column(nullable = false, length = 20)
     private TipoSkill tipo;
+
+    @OneToMany(mappedBy = "skill", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UsuarioSkill> usuarios = new HashSet<>();
+
+    @OneToMany(mappedBy = "skill", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TrilhaSkillNecessaria> trilhas = new HashSet<>();
 }
+

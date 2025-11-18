@@ -1,17 +1,16 @@
 package com.equalpath.domain;
 
-import com.equalpath.domain.enums.ObjetivoCarreira;
-import com.equalpath.domain.enums.StatusPerfil;
+import com.equalpath.domain.enums.*;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "USUARIO")
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -22,37 +21,38 @@ public class Usuario {
     @Column(name = "idUsuario")
     private Long id;
 
-    @NotBlank
-    @Size(max = 100)
     @Column(nullable = false, length = 100)
     private String nome;
 
-    @Size(max = 100)
-    @Column(length = 100)
+    @Column(nullable = false, length = 200)
     private String sobrenome;
 
-    @NotBlank
-    @Email
-    @Size(max = 150)
-    @Column(nullable = false, length = 150, unique = true)
+    @Column(nullable = false, unique = true, length = 150)
     private String email;
 
-    @Size(max = 20)
     @Column(length = 20)
     private String telefone;
 
-    @Column
+    @Column(nullable = false)
     private LocalDate dtCadastro;
 
-    @Size(max = 2)
     @Column(length = 2)
     private String estado;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 30)
+    @Column(nullable = false, length = 30)
     private ObjetivoCarreira objetivoCarreira;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable = false)
+    @Column(nullable = false, length = 20)
     private StatusPerfil statusPerfil;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UsuarioArea> areas = new HashSet<>();
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UsuarioSkill> skills = new HashSet<>();
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UsuarioTrilha> trilhas = new HashSet<>();
 }

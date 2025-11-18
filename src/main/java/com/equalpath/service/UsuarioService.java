@@ -1,15 +1,14 @@
 package com.equalpath.service;
 
-
 import com.equalpath.domain.Usuario;
-import com.equalpath.domain.enums.StatusPerfil;
 import com.equalpath.dto.UsuarioRequestDTO;
 import com.equalpath.dto.UsuarioResponseDTO;
-import com.equalpath.repository.UsuarioRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.equalpath.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -17,8 +16,9 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class UsuarioService {
 
-    private final UsuarioRepository repository;
+    private final UsuarioRepository4 usuarioRepository;
 
+    @Transactional
     public UsuarioResponseDTO criar(UsuarioRequestDTO dto) {
         Usuario usuario = new Usuario();
         usuario.setNome(dto.nome());
@@ -27,65 +27,72 @@ public class UsuarioService {
         usuario.setTelefone(dto.telefone());
         usuario.setEstado(dto.estado());
         usuario.setObjetivoCarreira(dto.objetivoCarreira());
-        usuario.setStatusPerfil(StatusPerfil.ATIVO);
+        usuario.setStatusPerfil(dto.statusPerfil());
         usuario.setDtCadastro(LocalDate.now());
 
-        Usuario salvo = repository.save(usuario);
-        return toResponse(salvo);
+        usuario = usuarioRepository.save(usuario);
+        return toResponse(usuario);
     }
 
-    public Page<UsuarioResponseDTO> listar(String nome, StatusPerfil status, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public UsuarioResponseDTO buscarPorId(Long id) {
+        Usuario usuario = getById(id);
+        return toResponse(usuario);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UsuarioResponseDTO> listar(String nome, Pageable pageable) {
         Page<Usuario> page;
 
         if (nome != null && !nome.isBlank()) {
-            page = repository.findByNomeContainingIgnoreCase(nome, pageable);
-        } else if (status != null) {
-            page = repository.findByStatusPerfil(status, pageable);
+            page = usuarioRepository
+                    .findByNomeContainingIgnoreCaseOrSobrenomeContainingIgnoreCase(nome, nome, pageable);
         } else {
-            page = repository.findAll(pageable);
+            page = usuarioRepository.findAll(pageable);
         }
 
         return page.map(this::toResponse);
     }
 
-    public UsuarioResponseDTO buscarPorId(Long id) {
-        Usuario usuario = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
-        return toResponse(usuario);
-    }
-
+    @Transactional
     public UsuarioResponseDTO atualizar(Long id, UsuarioRequestDTO dto) {
-        Usuario usuario = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+        Usuario usuario = getById(id);
 
         usuario.setNome(dto.nome());
         usuario.setSobrenome(dto.sobrenome());
         usuario.setTelefone(dto.telefone());
         usuario.setEstado(dto.estado());
         usuario.setObjetivoCarreira(dto.objetivoCarreira());
+        usuario.setStatusPerfil(dto.statusPerfil());
+        // email geralmente não muda, mas se quiser:
+        // usuario.setEmail(dto.email());
 
-        Usuario salvo = repository.save(usuario);
-        return toResponse(salvo);
+        usuario = usuarioRepository.save(usuario);
+        return toResponse(usuario);
     }
 
+    @Transactional
     public void excluir(Long id) {
-        if (!repository.existsById(id)) {
-            throw new EntityNotFoundException("Usuário não encontrado");
-        }
-        repository.deleteById(id);
+        Usuario usuario = getById(id);
+        usuarioRepository.delete(usuario);
     }
 
-    private UsuarioResponseDTO toResponse(Usuario u) {
+    private Usuario getById(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado para o id " + id));
+    }
+
+    private UsuarioResponseDTO toResponse(Usuario usuario) {
         return new UsuarioResponseDTO(
-                u.getId(),
-                u.getNome(),
-                u.getSobrenome(),
-                u.getEmail(),
-                u.getTelefone(),
-                u.getEstado(),
-                u.getObjetivoCarreira(),
-                u.getStatusPerfil(),
-                u.getDtCadastro()
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getSobrenome(),
+                usuario.getEmail(),
+                usuario.getTelefone(),
+                usuario.getEstado(),
+                usuario.getDtCadastro(),
+                usuario.getObjetivoCarreira(),
+                usuario.getStatusPerfil()
         );
     }
 }

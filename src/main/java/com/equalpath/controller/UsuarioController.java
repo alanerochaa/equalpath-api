@@ -1,14 +1,14 @@
 package com.equalpath.controller;
 
-import com.equalpath.domain.enums.StatusPerfil;
 import com.equalpath.dto.UsuarioRequestDTO;
 import com.equalpath.dto.UsuarioResponseDTO;
 import com.equalpath.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.*;
-import org.springframework.http.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,39 +16,41 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UsuarioController {
 
-    private final UsuarioService service;
+    private final UsuarioService usuarioService;
 
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> criar(@Valid @RequestBody UsuarioRequestDTO dto) {
-        UsuarioResponseDTO response = service.criar(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @GetMapping
-    public Page<UsuarioResponseDTO> listar(
-            @RequestParam(required = false) String nome,
-            @RequestParam(required = false) StatusPerfil status,
-            @ParameterObject Pageable pageable) {
-
-        return service.listar(nome, status, pageable);
+        UsuarioResponseDTO response = usuarioService.criar(dto);
+        return ResponseEntity.status(201).body(response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(service.buscarPorId(id));
+        UsuarioResponseDTO response = usuarioService.buscarPorId(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<UsuarioResponseDTO>> listar(
+            @RequestParam(required = false) String nome,
+            @PageableDefault(size = 10, sort = "nome") Pageable pageable
+    ) {
+        Page<UsuarioResponseDTO> page = usuarioService.listar(nome, pageable);
+        return ResponseEntity.ok(page);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> atualizar(
             @PathVariable Long id,
-            @Valid @RequestBody UsuarioRequestDTO dto) {
-
-        return ResponseEntity.ok(service.atualizar(id, dto));
+            @Valid @RequestBody UsuarioRequestDTO dto
+    ) {
+        UsuarioResponseDTO response = usuarioService.atualizar(id, dto);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
-        service.excluir(id);
+        usuarioService.excluir(id);
         return ResponseEntity.noContent().build();
     }
 }

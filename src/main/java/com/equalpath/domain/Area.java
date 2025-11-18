@@ -1,16 +1,17 @@
 package com.equalpath.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
-
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "AREA")
 @Getter @Setter
-@NoArgsConstructor @AllArgsConstructor @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Area {
 
     @Id
@@ -18,12 +19,15 @@ public class Area {
     @Column(name = "idArea")
     private Long id;
 
-    @NotBlank
-    @Size(max = 100)
+    @Column(nullable = false, length = 100)
     private String nome;
 
-    @Size(max = 300)
+    @Column(length = 300)
     private String descricao;
 
+    @Column(nullable = false)
     private LocalDate dtCriacao;
+
+    @OneToMany(mappedBy = "area", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UsuarioArea> usuarios = new HashSet<>();
 }

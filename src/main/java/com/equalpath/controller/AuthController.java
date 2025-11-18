@@ -25,7 +25,5 @@ public class AuthController {
                 request.username(), request.password());
         authManager.authenticate(authentication);
 
-        String token = tokenService.generateToken(request.username());
-        return ResponseEntity.ok(new AuthResponse(token));
     }
 }

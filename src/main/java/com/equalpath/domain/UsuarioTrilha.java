@@ -3,30 +3,38 @@ package com.equalpath.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "USUARIO_TRILHA")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UsuarioTrilha {
 
     @EmbeddedId
-    private UsuarioTrilhaId id;
+    private UsuarioTrilhaId id = new UsuarioTrilhaId();
 
-    @ManyToOne
-    @MapsId("idUsuario")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("usuarioId")
     @JoinColumn(name = "USUARIO_idUsuario")
     private Usuario usuario;
 
-    @ManyToOne
-    @MapsId("idTrilha")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("trilhaId")
     @JoinColumn(name = "TRILHA_idTrilha")
     private Trilha trilha;
 
-    private String status;
+    @Embeddable
+    @Getter @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    public static class UsuarioTrilhaId implements Serializable {
 
-    private LocalDate dataInicio;
-
-    private LocalDate dataConclusao;
+        private Long usuarioId;
+        private Long trilhaId;
+    }
 }

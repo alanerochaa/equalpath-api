@@ -1,4 +1,7 @@
 package com.equalpath.repository;
 
-public class TrilhaRepository {
+import com.equalpath.domain.Trilha;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TrilhaRepository extends JpaRepository<Trilha, Long> {
 }

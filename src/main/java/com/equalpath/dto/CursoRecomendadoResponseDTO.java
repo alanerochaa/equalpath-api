@@ -1,4 +1,13 @@
 package com.equalpath.dto;
 
-public class CursoRecomendadoResponseDTO {
-}
+import com.equalpath.domain.enums.PlataformaCurso;
+
+public record CursoRecomendadoResponseDTO(
+        Long id,
+        String nome,
+        String url,
+        Long idTrilha,
+        String nomeTrilha,
+        PlataformaCurso plataforma,
+        Integer duracaoHoras
+) {}

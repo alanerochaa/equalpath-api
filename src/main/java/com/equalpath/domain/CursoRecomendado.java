@@ -2,14 +2,14 @@ package com.equalpath.domain;
 
 import com.equalpath.domain.enums.PlataformaCurso;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
 @Table(name = "CURSO_RECOMENDADO")
 @Getter @Setter
-@NoArgsConstructor @AllArgsConstructor @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CursoRecomendado {
 
     @Id
@@ -17,20 +17,21 @@ public class CursoRecomendado {
     @Column(name = "idCurso")
     private Long id;
 
-    @NotBlank
-    @Size(max = 200)
+    @Column(nullable = false, length = 200)
     private String nome;
 
-    @Size(max = 400)
+    @Column(nullable = false, length = 400)
     private String url;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TRILHA_idTrilha", nullable = false)
+    private Trilha trilha;
+
     @Enumerated(EnumType.STRING)
-    @Column(length = 30)
+    @Column(nullable = false, length = 50)
     private PlataformaCurso plataforma;
 
+    @Column(nullable = false)
     private Integer duracaoHoras;
-
-    @ManyToOne
-    @JoinColumn(name = "TRILHA_idTrilha")
-    private Trilha trilha;
 }
+
