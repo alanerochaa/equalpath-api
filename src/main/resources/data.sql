@@ -1,4 +1,144 @@
 ------------------------------------------------------
+-- DROP (opcional – só usar se precisar zerar tudo)
+------------------------------------------------------
+-- DROP TABLE TRILHA_SKILL_NECESSARIA CASCADE CONSTRAINTS;
+-- DROP TABLE USUARIO_TRILHA CASCADE CONSTRAINTS;
+-- DROP TABLE USUARIO_SKILL CASCADE CONSTRAINTS;
+-- DROP TABLE USUARIO_AREA CASCADE CONSTRAINTS;
+-- DROP TABLE CURSO_RECOMENDADO CASCADE CONSTRAINTS;
+-- DROP TABLE TRILHA CASCADE CONSTRAINTS;
+-- DROP TABLE SKILL CASCADE CONSTRAINTS;
+-- DROP TABLE USUARIO CASCADE CONSTRAINTS;
+-- DROP TABLE AREA CASCADE CONSTRAINTS;
+
+------------------------------------------------------
+-- TABELA: AREA
+------------------------------------------------------
+CREATE TABLE AREA (
+    idArea      NUMBER(10)        NOT NULL,
+    nome        VARCHAR2(100)     NOT NULL,
+    descricao   VARCHAR2(255),
+    dtCriacao   DATE              NOT NULL,
+    CONSTRAINT PK_AREA PRIMARY KEY (idArea)
+);
+
+------------------------------------------------------
+-- TABELA: USUARIO
+------------------------------------------------------
+CREATE TABLE USUARIO (
+    idUsuario        NUMBER(10)     NOT NULL,
+    nome             VARCHAR2(100)  NOT NULL,
+    sobrenome        VARCHAR2(200)  NOT NULL,
+    email            VARCHAR2(150)  NOT NULL,
+    telefone         VARCHAR2(20),
+    dtCadastro       DATE           NOT NULL,
+    estado           CHAR(2),
+    objetivoCarreira VARCHAR2(30)   NOT NULL,
+    statusPerfil     VARCHAR2(20)   NOT NULL,
+    CONSTRAINT PK_USUARIO PRIMARY KEY (idUsuario),
+    CONSTRAINT UK_USUARIO_EMAIL UNIQUE (email)
+);
+
+------------------------------------------------------
+-- TABELA: SKILL
+------------------------------------------------------
+CREATE TABLE SKILL (
+    idSkill       NUMBER(10)      NOT NULL,
+    nome          VARCHAR2(100)   NOT NULL,
+    descricao     VARCHAR2(255),
+    nivel         VARCHAR2(20)    NOT NULL,  -- ex: INICIANTE, INTERMEDIARIO
+    categoria     VARCHAR2(20)    NOT NULL,  -- ex: TECNICA, COMPORTAMENTAL
+    ultimoAcesso  DATE,
+    tipo          VARCHAR2(10)    NOT NULL,  -- ex: HARD, SOFT
+    CONSTRAINT PK_SKILL PRIMARY KEY (idSkill)
+);
+
+------------------------------------------------------
+-- TABELA: TRILHA
+------------------------------------------------------
+CREATE TABLE TRILHA (
+    idTrilha    NUMBER(10)       NOT NULL,
+    nome        VARCHAR2(150)    NOT NULL,
+    descricao   VARCHAR2(400),
+    nivel       VARCHAR2(20)     NOT NULL,  -- ex: INICIANTE
+    objetivo    VARCHAR2(255)    NOT NULL,
+    status      VARCHAR2(20)     NOT NULL,  -- ex: EM_ANDAMENTO, NAO_INICIADA
+    dtCriacao   DATE             NOT NULL,
+    CONSTRAINT PK_TRILHA PRIMARY KEY (idTrilha)
+);
+
+------------------------------------------------------
+-- TABELA: CURSO_RECOMENDADO
+------------------------------------------------------
+CREATE TABLE CURSO_RECOMENDADO (
+    idCurso        NUMBER(10)      NOT NULL,
+    nome           VARCHAR2(200)   NOT NULL,
+    url            VARCHAR2(500)   NOT NULL,
+    TRILHA_idTrilha NUMBER(10)     NOT NULL,
+    plataforma     VARCHAR2(20)    NOT NULL, -- ex: ALURA, UDEMY
+    duracaoHoras   NUMBER(4),
+    CONSTRAINT PK_CURSO_RECOMENDADO PRIMARY KEY (idCurso),
+    CONSTRAINT FK_CURSO_TRILHA FOREIGN KEY (TRILHA_idTrilha)
+        REFERENCES TRILHA (idTrilha)
+);
+
+------------------------------------------------------
+-- TABELA: USUARIO_AREA (N:N)
+------------------------------------------------------
+CREATE TABLE USUARIO_AREA (
+    USUARIO_idUsuario  NUMBER(10) NOT NULL,
+    AREA_idArea        NUMBER(10) NOT NULL,
+    CONSTRAINT PK_USUARIO_AREA PRIMARY KEY (USUARIO_idUsuario, AREA_idArea),
+    CONSTRAINT FK_USUARIO_AREA_USUARIO FOREIGN KEY (USUARIO_idUsuario)
+        REFERENCES USUARIO (idUsuario),
+    CONSTRAINT FK_USUARIO_AREA_AREA FOREIGN KEY (AREA_idArea)
+        REFERENCES AREA (idArea)
+);
+
+------------------------------------------------------
+-- TABELA: USUARIO_SKILL (N:N + nivel do usuário)
+------------------------------------------------------
+CREATE TABLE USUARIO_SKILL (
+    USUARIO_idUsuario  NUMBER(10) NOT NULL,
+    SKILL_idSkill      NUMBER(10) NOT NULL,
+    nivel              VARCHAR2(20) NOT NULL, -- INICIANTE / INTERMEDIARIO...
+    CONSTRAINT PK_USUARIO_SKILL PRIMARY KEY (USUARIO_idUsuario, SKILL_idSkill),
+    CONSTRAINT FK_USUARIO_SKILL_USUARIO FOREIGN KEY (USUARIO_idUsuario)
+        REFERENCES USUARIO (idUsuario),
+    CONSTRAINT FK_USUARIO_SKILL_SKILL FOREIGN KEY (SKILL_idSkill)
+        REFERENCES SKILL (idSkill)
+);
+
+------------------------------------------------------
+-- TABELA: USUARIO_TRILHA (N:N + status e datas)
+------------------------------------------------------
+CREATE TABLE USUARIO_TRILHA (
+    USUARIO_idUsuario  NUMBER(10) NOT NULL,
+    TRILHA_idTrilha    NUMBER(10) NOT NULL,
+    status             VARCHAR2(20) NOT NULL, -- EM_ANDAMENTO, CONCLUIDA...
+    dataInicio         DATE,
+    dataConclusao      DATE,
+    CONSTRAINT PK_USUARIO_TRILHA PRIMARY KEY (USUARIO_idUsuario, TRILHA_idTrilha),
+    CONSTRAINT FK_USUARIO_TRILHA_USUARIO FOREIGN KEY (USUARIO_idUsuario)
+        REFERENCES USUARIO (idUsuario),
+    CONSTRAINT FK_USUARIO_TRILHA_TRILHA FOREIGN KEY (TRILHA_idTrilha)
+        REFERENCES TRILHA (idTrilha)
+);
+
+------------------------------------------------------
+-- TABELA: TRILHA_SKILL_NECESSARIA (N:N)
+------------------------------------------------------
+CREATE TABLE TRILHA_SKILL_NECESSARIA (
+    TRILHA_idTrilha  NUMBER(10) NOT NULL,
+    SKILL_idSkill    NUMBER(10) NOT NULL,
+    CONSTRAINT PK_TRILHA_SKILL_NECESSARIA PRIMARY KEY (TRILHA_idTrilha, SKILL_idSkill),
+    CONSTRAINT FK_TSN_TRILHA FOREIGN KEY (TRILHA_idTrilha)
+        REFERENCES TRILHA (idTrilha),
+    CONSTRAINT FK_TSN_SKILL FOREIGN KEY (SKILL_idSkill)
+        REFERENCES SKILL (idSkill)
+);
+------------------------------------------------------
+
 -- ÁREAS
 ------------------------------------------------------
 INSERT INTO AREA (idArea, nome, descricao, dtCriacao) VALUES

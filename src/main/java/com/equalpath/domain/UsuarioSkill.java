@@ -2,6 +2,7 @@ package com.equalpath.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.io.Serializable;
 
 @Entity
@@ -18,22 +19,26 @@ public class UsuarioSkill {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("usuarioId")
-    @JoinColumn(name = "USUARIO_idUsuario")
+    @JoinColumn(name = "USUARIO_IDUSUARIO")
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("skillId")
-    @JoinColumn(name = "SKILL_idSkill")
+    @JoinColumn(name = "SKILL_IDSKILL")
     private Skill skill;
 
     @Embeddable
-    @Getter @Setter
+    @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     @EqualsAndHashCode
     public static class UsuarioSkillId implements Serializable {
 
+        @Column(name = "USUARIO_IDUSUARIO")
         private Long usuarioId;
+
+        @Column(name = "SKILL_IDSKILL")
         private Long skillId;
     }
 }

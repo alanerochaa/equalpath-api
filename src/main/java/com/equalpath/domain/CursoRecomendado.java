@@ -6,32 +6,31 @@ import lombok.*;
 
 @Entity
 @Table(name = "CURSO_RECOMENDADO")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class CursoRecomendado {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idCurso")
+    @Column(name = "IDCURSO") // coluna física no Oracle
     private Long id;
 
-    @Column(nullable = false, length = 200)
+    @Column(name = "NOME", nullable = false, length = 200)
     private String nome;
 
-    @Column(nullable = false, length = 400)
+    @Column(name = "URL", nullable = false, length = 400)
     private String url;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TRILHA_idTrilha", nullable = false)
+    @JoinColumn(name = "TRILHA_IDTRILHA", nullable = false) // igual à FK da tabela
     private Trilha trilha;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
+    @Column(name = "PLATAFORMA", nullable = false, length = 50)
     private PlataformaCurso plataforma;
 
-    @Column(nullable = false)
+    @Column(name = "DURACAOHORAS", nullable = false)
     private Integer duracaoHoras;
 }
-

@@ -19,22 +19,26 @@ public class TrilhaSkillNecessaria {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("trilhaId")
-    @JoinColumn(name = "TRILHA_idTrilha")
+    @JoinColumn(name = "TRILHA_IDTRILHA") // FK física na tabela
     private Trilha trilha;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("skillId")
-    @JoinColumn(name = "SKILL_idSkill")
+    @JoinColumn(name = "SKILL_IDSKILL") // FK física na tabela
     private Skill skill;
 
     @Embeddable
-    @Getter @Setter
+    @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     @EqualsAndHashCode
     public static class TrilhaSkillNecessariaId implements Serializable {
 
+        @Column(name = "TRILHA_IDTRILHA")
         private Long trilhaId;
+
+        @Column(name = "SKILL_IDSKILL")
         private Long skillId;
     }
 }

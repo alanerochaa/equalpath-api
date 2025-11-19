@@ -19,22 +19,26 @@ public class UsuarioTrilha {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("usuarioId")
-    @JoinColumn(name = "USUARIO_idUsuario")
+    @JoinColumn(name = "USUARIO_IDUSUARIO")
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("trilhaId")
-    @JoinColumn(name = "TRILHA_idTrilha")
+    @JoinColumn(name = "TRILHA_IDTRILHA")
     private Trilha trilha;
 
     @Embeddable
-    @Getter @Setter
+    @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     @EqualsAndHashCode
     public static class UsuarioTrilhaId implements Serializable {
 
+        @Column(name = "USUARIO_IDUSUARIO")
         private Long usuarioId;
+
+        @Column(name = "TRILHA_IDTRILHA")
         private Long trilhaId;
     }
 }

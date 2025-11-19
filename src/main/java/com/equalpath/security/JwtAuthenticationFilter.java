@@ -26,31 +26,71 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
+    /**
+     * Rotas que NÃO devem passar pelo filtro de JWT
+     * (Swagger, OpenAPI, auth, health, raiz, etc.)
+     */
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+
+        return path.startsWith("/v3/api-docs")
+                || path.startsWith("/swagger-ui")
+                || path.equals("/")
+                || path.startsWith("/api/auth")
+                || path.startsWith("/actuator")
+                || path.equals("/health");
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String token = jwtTokenService.extractToken(request);
+        String token = null;
 
-        if (token != null && jwtTokenService.isTokenValid(token)) {
-            String username = jwtTokenService.getUsernameFromToken(token);
+        try {
+            // extrai o token do header (ou onde você implementou)
+            token = jwtTokenService.extractToken(request);
+        } catch (Exception e) {
+            // falha na extração não deve quebrar a requisição
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        // se não tem token, segue o fluxo sem autenticar
+        if (token == null || token.isBlank()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
+        try {
+            if (jwtTokenService.isTokenValid(token)) {
+                String username = jwtTokenService.getUsernameFromToken(token);
+
+                if (username != null &&
+                        SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
+
+                    authentication.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
                     );
 
-            authentication.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
-            );
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            }
+        } catch (Exception e) {
+            // qualquer erro de validação de token não pode virar 500
+            // apenas não autentica e segue o fluxo
         }
 
         filterChain.doFilter(request, response);

@@ -51,13 +51,23 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // público: raiz da aplicação e erro
+                        .requestMatchers("/", "/error").permitAll()
+
+                        // público: swagger / openapi
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**"
                         ).permitAll()
+
+                        // público: endpoints de autenticação
                         .requestMatchers("/api/auth/**").permitAll()
+
+                        // público: health-checks
                         .requestMatchers("/actuator/health", "/health").permitAll()
+
+                        // demais rotas: exigem JWT
                         .anyRequest().authenticated()
                 )
                 .httpBasic(AbstractHttpConfigurer::disable)
