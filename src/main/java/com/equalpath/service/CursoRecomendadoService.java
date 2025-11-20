@@ -2,6 +2,7 @@ package com.equalpath.service;
 
 import com.equalpath.domain.CursoRecomendado;
 import com.equalpath.domain.Trilha;
+import com.equalpath.domain.enums.PlataformaCurso;
 import com.equalpath.dto.CursoRecomendadoRequestDTO;
 import com.equalpath.dto.CursoRecomendadoResponseDTO;
 import com.equalpath.exception.NotFoundException;
@@ -39,9 +40,15 @@ public class CursoRecomendadoService {
     }
 
     @Transactional(readOnly = true)
-    public List<CursoRecomendadoResponseDTO> listarPorTrilha(Long idTrilha) {
+    public List<CursoRecomendadoResponseDTO> listarPorTrilha(Long idTrilha, PlataformaCurso plataforma) {
 
-        List<CursoRecomendado> cursos = cursoRepository.findByTrilha_Id(idTrilha);
+        List<CursoRecomendado> cursos;
+
+        if (plataforma != null) {
+            cursos = cursoRepository.findByTrilha_IdAndPlataforma(idTrilha, plataforma);
+        } else {
+            cursos = cursoRepository.findByTrilha_Id(idTrilha);
+        }
 
         return cursos.stream()
                 .map(this::toResponse)
