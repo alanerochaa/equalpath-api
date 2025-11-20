@@ -38,7 +38,9 @@ public class RecomendacaoController {
     public ResponseEntity<List<RecomendacaoResponseDTO>> recomendarPorUsuario(
             @PathVariable Long idUsuario
     ) {
-        List<RecomendacaoResponseDTO> recomendacoes = recomendacaoService.recomendarPorUsuario(idUsuario);
+        List<RecomendacaoResponseDTO> recomendacoes =
+                recomendacaoService.recomendarPorUsuario(idUsuario);
+
         return ResponseEntity.ok(recomendacoes);
     }
 }

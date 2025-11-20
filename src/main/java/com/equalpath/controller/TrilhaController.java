@@ -1,21 +1,20 @@
 package com.equalpath.controller;
 
+import com.equalpath.domain.enums.StatusTrilha;
 import com.equalpath.dto.TrilhaRequestDTO;
 import com.equalpath.dto.TrilhaResponseDTO;
 import com.equalpath.service.TrilhaService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -33,78 +32,64 @@ public class TrilhaController {
     @PostMapping
     @Operation(
             summary = "Criar trilha",
-            description = "Registra uma nova trilha de carreira, vinculada a skills e perfil de usuário-alvo."
+            description = "Registra uma nova trilha de carreira, vinculada a skills e perfil de usuário."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Trilha criada com sucesso."),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos para criação da trilha."),
-            @ApiResponse(responseCode = "500", description = "Erro interno ao criar trilha.")
+            @ApiResponse(responseCode = "400", description = "Dados inválidos para criação.")
     })
     public ResponseEntity<TrilhaResponseDTO> criar(@Valid @RequestBody TrilhaRequestDTO dto) {
-        TrilhaResponseDTO response = trilhaService.criar(dto);
-        return ResponseEntity.status(201).body(response);
+        return ResponseEntity.status(201).body(trilhaService.criar(dto));
     }
 
     @GetMapping("/{id}")
     @Operation(
             summary = "Buscar trilha por ID",
-            description = "Consulta os dados de uma trilha específica, incluindo metadados principais."
+            description = "Consulta os dados de uma trilha específica."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Trilha encontrada com sucesso."),
-            @ApiResponse(responseCode = "404", description = "Trilha não encontrada."),
-            @ApiResponse(responseCode = "500", description = "Erro interno ao consultar trilha.")
+            @ApiResponse(responseCode = "200", description = "Trilha encontrada."),
+            @ApiResponse(responseCode = "404", description = "Trilha não encontrada.")
     })
     public ResponseEntity<TrilhaResponseDTO> buscarPorId(@PathVariable Long id) {
-        TrilhaResponseDTO response = trilhaService.buscarPorId(id);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(trilhaService.buscarPorId(id));
     }
 
     @GetMapping
     @Operation(
             summary = "Listar trilhas",
-            description = "Retorna o catálogo de trilhas, com suporte a paginação e ordenação."
+            description = "Retorna as trilhas cadastradas, com filtro opcional por status."
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de trilhas recuperada com sucesso."),
-            @ApiResponse(responseCode = "400", description = "Parâmetros de paginação/ordenação inválidos."),
-            @ApiResponse(responseCode = "500", description = "Erro interno ao listar trilhas.")
-    })
-    public ResponseEntity<Page<TrilhaResponseDTO>> listar(
-            @PageableDefault(size = 10, sort = "nome") Pageable pageable
+    public ResponseEntity<List<TrilhaResponseDTO>> listar(
+            @RequestParam(required = false) StatusTrilha status
     ) {
-        Page<TrilhaResponseDTO> page = trilhaService.listar(pageable);
-        return ResponseEntity.ok(page);
+        return ResponseEntity.ok(trilhaService.listar(status));
     }
 
     @PutMapping("/{id}")
     @Operation(
             summary = "Atualizar trilha",
-            description = "Ajusta as informações de uma trilha existente (nome, descrição, nível, etc.)."
+            description = "Atualiza os metadados de uma trilha existente."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Trilha atualizada com sucesso."),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos para atualização."),
-            @ApiResponse(responseCode = "404", description = "Trilha não encontrada."),
-            @ApiResponse(responseCode = "500", description = "Erro interno ao atualizar trilha.")
+            @ApiResponse(responseCode = "200", description = "Trilha atualizada."),
+            @ApiResponse(responseCode = "404", description = "Trilha não encontrada.")
     })
     public ResponseEntity<TrilhaResponseDTO> atualizar(
             @PathVariable Long id,
             @Valid @RequestBody TrilhaRequestDTO dto
     ) {
-        TrilhaResponseDTO response = trilhaService.atualizar(id, dto);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(trilhaService.atualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
     @Operation(
             summary = "Excluir trilha",
-            description = "Remove uma trilha do catálogo, conforme regra de negócio."
+            description = "Remove uma trilha do catálogo."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Trilha removida com sucesso."),
-            @ApiResponse(responseCode = "404", description = "Trilha não encontrada."),
-            @ApiResponse(responseCode = "500", description = "Erro interno ao excluir trilha.")
+            @ApiResponse(responseCode = "200", description = "Trilha excluída."),
+            @ApiResponse(responseCode = "404", description = "Trilha não encontrada.")
     })
     public ResponseEntity<?> excluir(@PathVariable Long id) {
         trilhaService.excluir(id);

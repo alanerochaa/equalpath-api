@@ -10,12 +10,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -37,8 +35,7 @@ public class SkillController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Skill criada com sucesso."),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos para criação da skill."),
-            @ApiResponse(responseCode = "500", description = "Erro interno ao criar skill.")
+            @ApiResponse(responseCode = "400", description = "Dados inválidos para criação da skill.")
     })
     public ResponseEntity<SkillResponseDTO> criar(@Valid @RequestBody SkillRequestDTO dto) {
         SkillResponseDTO response = skillService.criar(dto);
@@ -52,29 +49,19 @@ public class SkillController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Skill localizada com sucesso."),
-            @ApiResponse(responseCode = "404", description = "Skill não encontrada."),
-            @ApiResponse(responseCode = "500", description = "Erro interno ao consultar skill.")
+            @ApiResponse(responseCode = "404", description = "Skill não encontrada.")
     })
     public ResponseEntity<SkillResponseDTO> buscarPorId(@PathVariable Long id) {
-        SkillResponseDTO response = skillService.buscarPorId(id);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(skillService.buscarPorId(id));
     }
 
     @GetMapping
     @Operation(
             summary = "Listar skills",
-            description = "Lista as skills cadastradas, com paginação e ordenação configuráveis."
+            description = "Retorna todas as skills disponíveis no catálogo."
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de skills recuperada com sucesso."),
-            @ApiResponse(responseCode = "400", description = "Parâmetros de paginação/ordenação inválidos."),
-            @ApiResponse(responseCode = "500", description = "Erro interno ao listar skills.")
-    })
-    public ResponseEntity<Page<SkillResponseDTO>> listar(
-            @PageableDefault(size = 10, sort = "nome") Pageable pageable
-    ) {
-        Page<SkillResponseDTO> page = skillService.listar(pageable);
-        return ResponseEntity.ok(page);
+    public ResponseEntity<List<SkillResponseDTO>> listar() {
+        return ResponseEntity.ok(skillService.listar());
     }
 
     @PutMapping("/{id}")
@@ -84,9 +71,7 @@ public class SkillController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Skill atualizada com sucesso."),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos para atualização."),
-            @ApiResponse(responseCode = "404", description = "Skill não encontrada."),
-            @ApiResponse(responseCode = "500", description = "Erro interno ao atualizar skill.")
+            @ApiResponse(responseCode = "404", description = "Skill não encontrada.")
     })
     public ResponseEntity<SkillResponseDTO> atualizar(
             @PathVariable Long id,
@@ -99,12 +84,11 @@ public class SkillController {
     @DeleteMapping("/{id}")
     @Operation(
             summary = "Excluir skill",
-            description = "Remove uma skill do catálogo, garantindo integridade com trilhas que a utilizam."
+            description = "Remove uma skill do catálogo."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Skill removida com sucesso."),
-            @ApiResponse(responseCode = "404", description = "Skill não encontrada."),
-            @ApiResponse(responseCode = "500", description = "Erro interno ao excluir skill.")
+            @ApiResponse(responseCode = "404", description = "Skill não encontrada.")
     })
     public ResponseEntity<?> excluir(@PathVariable Long id) {
         skillService.excluir(id);

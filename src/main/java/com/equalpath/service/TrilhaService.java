@@ -1,17 +1,17 @@
 package com.equalpath.service;
 
 import com.equalpath.domain.Trilha;
+import com.equalpath.domain.enums.StatusTrilha;
 import com.equalpath.dto.TrilhaRequestDTO;
 import com.equalpath.dto.TrilhaResponseDTO;
 import com.equalpath.exception.NotFoundException;
 import com.equalpath.repository.TrilhaRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,32 +21,39 @@ public class TrilhaService {
 
     @Transactional
     public TrilhaResponseDTO criar(TrilhaRequestDTO dto) {
-        Trilha trilha = new Trilha();
-        trilha.setNome(dto.nome());
-        trilha.setDescricao(dto.descricao());
-        trilha.setNivel(dto.nivel());          // enum NivelTrilha
-        trilha.setObjetivo(dto.objetivo());    // String (texto livre)
-        trilha.setStatus(dto.status());        // enum StatusTrilha
-        trilha.setDtCriacao(LocalDate.now());
 
-        trilha = trilhaRepository.save(trilha);
-        return toResponse(trilha);
+        Trilha trilha = Trilha.builder()
+                .nome(dto.nome())
+                .descricao(dto.descricao())
+                .nivel(dto.nivel())
+                .objetivo(dto.objetivo())
+                .status(dto.status())
+                .dtCriacao(LocalDate.now())
+                .build();
+
+        return mapToResponse(trilhaRepository.save(trilha));
     }
 
     @Transactional(readOnly = true)
     public TrilhaResponseDTO buscarPorId(Long id) {
-        Trilha trilha = getById(id);
-        return toResponse(trilha);
+        return mapToResponse(getById(id));
     }
 
     @Transactional(readOnly = true)
-    public Page<TrilhaResponseDTO> listar(Pageable pageable) {
-        return trilhaRepository.findAll(pageable)
-                .map(this::toResponse);
+    public List<TrilhaResponseDTO> listar(StatusTrilha status) {
+
+        List<Trilha> trilhas = (status != null)
+                ? trilhaRepository.findByStatus(status)
+                : trilhaRepository.findAll();
+
+        return trilhas.stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     @Transactional
     public TrilhaResponseDTO atualizar(Long id, TrilhaRequestDTO dto) {
+
         Trilha trilha = getById(id);
 
         trilha.setNome(dto.nome());
@@ -55,8 +62,7 @@ public class TrilhaService {
         trilha.setObjetivo(dto.objetivo());
         trilha.setStatus(dto.status());
 
-        trilha = trilhaRepository.save(trilha);
-        return toResponse(trilha);
+        return mapToResponse(trilhaRepository.save(trilha));
     }
 
     @Transactional
@@ -67,17 +73,16 @@ public class TrilhaService {
 
     private Trilha getById(Long id) {
         return trilhaRepository.findById(id)
-                .orElseThrow(() ->
-                        new NotFoundException("Trilha não encontrada para o id " + id));
+                .orElseThrow(() -> new NotFoundException("Trilha não encontrada: " + id));
     }
 
-    private TrilhaResponseDTO toResponse(Trilha trilha) {
+    private TrilhaResponseDTO mapToResponse(Trilha trilha) {
         return new TrilhaResponseDTO(
                 trilha.getId(),
                 trilha.getNome(),
                 trilha.getDescricao(),
                 trilha.getNivel(),
-                trilha.getObjetivo(),   // String
+                trilha.getObjetivo(),
                 trilha.getStatus(),
                 trilha.getDtCriacao()
         );

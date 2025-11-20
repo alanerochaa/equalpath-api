@@ -29,23 +29,31 @@ public class RecomendacaoService {
     @Transactional(readOnly = true)
     public List<RecomendacaoResponseDTO> recomendarPorUsuario(Long idUsuario) {
 
+        // Validação de existência do usuário
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() ->
                         new NotFoundException("Usuário não encontrado para o id " + idUsuario));
 
-        // Lista de skills que o usuário possui
+        // Skills que o usuário possui
         List<UsuarioSkill> usuarioSkills =
                 usuarioSkillRepository.findByUsuario_Id(usuario.getId());
 
+        // Se o usuário não tiver skills mapeadas, já retorna lista vazia
+        if (usuarioSkills.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Conjunto de IDs das skills do usuário (para match rápido)
         Set<Long> idsSkillsUsuario = usuarioSkills.stream()
                 .map(us -> us.getSkill().getId())
                 .collect(Collectors.toSet());
 
+        // Mapa ID -> Nome das skills do usuário (para montagem dos nomes)
         Map<Long, String> nomeSkillsUsuario = usuarioSkills.stream()
                 .collect(Collectors.toMap(
                         us -> us.getSkill().getId(),
                         us -> us.getSkill().getNome(),
-                        (a, b) -> a
+                        (a, b) -> a // em caso de chave repetida, mantém o primeiro
                 ));
 
         List<Trilha> trilhas = trilhaRepository.findAll();
@@ -53,11 +61,12 @@ public class RecomendacaoService {
 
         for (Trilha trilha : trilhas) {
 
-            // 🔹 Agora pega direto da entidade
+            // Skills necessárias configuradas para a trilha
             List<TrilhaSkillNecessaria> necessarias = trilha.getSkills().stream().toList();
 
+            // Se a trilha não tiver skills de referência, ignora
             if (necessarias.isEmpty()) {
-                continue; // Sem regra de skill = ignora
+                continue;
             }
 
             Set<Long> idsSkillsNecessarias = necessarias.stream()
@@ -72,12 +81,14 @@ public class RecomendacaoService {
                     .valueOf((qtdMatch * 100.0) / idsSkillsNecessarias.size())
                     .setScale(2, RoundingMode.HALF_UP);
 
+            // Skills que o usuário possui e que batem com a trilha
             List<String> nomesUsuarioPossui = idsSkillsNecessarias.stream()
                     .filter(idsSkillsUsuario::contains)
                     .map(nomeSkillsUsuario::get)
                     .filter(Objects::nonNull)
                     .toList();
 
+            // Todas as skills de referência da trilha
             List<String> nomesNecessarias = necessarias.stream()
                     .map(ts -> ts.getSkill().getNome())
                     .toList();
@@ -91,8 +102,10 @@ public class RecomendacaoService {
             ));
         }
 
+        // Ordena por maior aderência primeiro
         resultado.sort(
-                Comparator.comparing(RecomendacaoResponseDTO::percentualAderencia).reversed()
+                Comparator.comparing(RecomendacaoResponseDTO::percentualAderencia)
+                        .reversed()
         );
 
         return resultado;

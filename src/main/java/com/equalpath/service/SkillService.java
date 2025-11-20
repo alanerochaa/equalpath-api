@@ -6,12 +6,11 @@ import com.equalpath.dto.SkillResponseDTO;
 import com.equalpath.exception.NotFoundException;
 import com.equalpath.repository.SkillRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,32 +20,35 @@ public class SkillService {
 
     @Transactional
     public SkillResponseDTO criar(SkillRequestDTO dto) {
-        Skill skill = new Skill();
-        skill.setNome(dto.nome());
-        skill.setDescricao(dto.descricao());
-        skill.setNivel(dto.nivel());
-        skill.setCategoria(dto.categoria());
-        skill.setTipo(dto.tipo());
-        skill.setUltimoAcesso(LocalDate.now());
 
-        skill = skillRepository.save(skill);
-        return toResponse(skill);
+        Skill skill = Skill.builder()
+                .nome(dto.nome())
+                .descricao(dto.descricao())
+                .nivel(dto.nivel())
+                .categoria(dto.categoria())
+                .tipo(dto.tipo())
+                .ultimoAcesso(LocalDate.now())
+                .build();
+
+        return toResponse(skillRepository.save(skill));
     }
 
     @Transactional(readOnly = true)
     public SkillResponseDTO buscarPorId(Long id) {
-        Skill skill = getById(id);
-        return toResponse(skill);
+        return toResponse(getById(id));
     }
 
     @Transactional(readOnly = true)
-    public Page<SkillResponseDTO> listar(Pageable pageable) {
-        return skillRepository.findAll(pageable)
-                .map(this::toResponse);
+    public List<SkillResponseDTO> listar() {
+        return skillRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     @Transactional
     public SkillResponseDTO atualizar(Long id, SkillRequestDTO dto) {
+
         Skill skill = getById(id);
 
         skill.setNome(dto.nome());
@@ -55,19 +57,17 @@ public class SkillService {
         skill.setCategoria(dto.categoria());
         skill.setTipo(dto.tipo());
 
-        skill = skillRepository.save(skill);
-        return toResponse(skill);
+        return toResponse(skillRepository.save(skill));
     }
 
     @Transactional
     public void excluir(Long id) {
-        Skill skill = getById(id);
-        skillRepository.delete(skill);
+        skillRepository.delete(getById(id));
     }
 
     private Skill getById(Long id) {
         return skillRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Skill não encontrada para o id " + id));
+                .orElseThrow(() -> new NotFoundException("Skill não encontrada: " + id));
     }
 
     private SkillResponseDTO toResponse(Skill skill) {
