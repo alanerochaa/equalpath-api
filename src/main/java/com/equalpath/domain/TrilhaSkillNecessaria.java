@@ -19,12 +19,12 @@ public class TrilhaSkillNecessaria {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("trilhaId")
-    @JoinColumn(name = "TRILHA_IDTRILHA") // FK física na tabela
+    @JoinColumn(name = "TRILHA_IDTRILHA")
     private Trilha trilha;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("skillId")
-    @JoinColumn(name = "SKILL_IDSKILL") // FK física na tabela
+    @JoinColumn(name = "SKILL_IDSKILL")
     private Skill skill;
 
     @Embeddable

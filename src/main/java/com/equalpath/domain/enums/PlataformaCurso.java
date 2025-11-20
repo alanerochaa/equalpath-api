@@ -1,10 +1,8 @@
 package com.equalpath.domain.enums;
 
 public enum PlataformaCurso {
-    ALURA,
     UDEMY,
+    ALURA,
     COURSERA,
-    YOUTUBE,
-    FIAP_ON,
     DIO
 }

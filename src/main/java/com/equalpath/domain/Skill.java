@@ -21,13 +21,15 @@ import java.util.Set;
 public class Skill {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_skill")
+    @SequenceGenerator(name = "seq_skill", sequenceName = "SEQ_SKILL", allocationSize = 1)
     @Column(name = "IDSKILL")
     private Long id;
 
     @Column(name = "NOME", nullable = false, length = 100)
     private String nome;
 
-    @Column(name = "DESCRICAO", length = 500)
+    @Column(name = "DESCRICAO", nullable = false, length = 500)
     private String descricao;
 
     @Enumerated(EnumType.STRING)
@@ -35,21 +37,21 @@ public class Skill {
     private NivelTrilha nivel;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "CATEGORIA", nullable = false, length = 20)
+    @Column(name = "CATEGORIA", nullable = false, length = 50)
     private CategoriaSkill categoria;
 
-    @Column(name = "ULTIMOACESSO")
+    @Column(name = "ULTIMOACESSO", nullable = false)
     private LocalDate ultimoAcesso;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "TIPO", nullable = false, length = 20)
+    @Column(name = "TIPO", nullable = false, length = 50)
     private TipoSkill tipo;
 
     @OneToMany(mappedBy = "skill", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore // Skill -> UsuarioSkill -> Usuario -> UsuarioSkill...
+    @JsonIgnore
     private Set<UsuarioSkill> usuarios = new HashSet<>();
 
     @OneToMany(mappedBy = "skill", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore // Skill -> TrilhaSkillNecessaria -> Trilha -> TrilhaSkillNecessaria...
+    @JsonIgnore
     private Set<TrilhaSkillNecessaria> trilhas = new HashSet<>();
 }

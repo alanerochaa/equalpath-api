@@ -7,7 +7,6 @@ import com.equalpath.domain.UsuarioSkill;
 import com.equalpath.dto.RecomendacaoResponseDTO;
 import com.equalpath.exception.NotFoundException;
 import com.equalpath.repository.TrilhaRepository;
-import com.equalpath.repository.TrilhaSkillNecessariaRepository;
 import com.equalpath.repository.UsuarioRepository;
 import com.equalpath.repository.UsuarioSkillRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,33 +25,39 @@ public class RecomendacaoService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioSkillRepository usuarioSkillRepository;
     private final TrilhaRepository trilhaRepository;
-    private final TrilhaSkillNecessariaRepository trilhaSkillNecessariaRepository;
 
     @Transactional(readOnly = true)
     public List<RecomendacaoResponseDTO> recomendarPorUsuario(Long idUsuario) {
 
         Usuario usuario = usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado para o id " + idUsuario));
+                .orElseThrow(() ->
+                        new NotFoundException("Usuário não encontrado para o id " + idUsuario));
 
-        // Skills que o usuário possui
-        List<UsuarioSkill> usuarioSkills = usuarioSkillRepository.findByUsuario_Id(usuario.getId());
+        // Lista de skills que o usuário possui
+        List<UsuarioSkill> usuarioSkills =
+                usuarioSkillRepository.findByUsuario_Id(usuario.getId());
+
         Set<Long> idsSkillsUsuario = usuarioSkills.stream()
                 .map(us -> us.getSkill().getId())
                 .collect(Collectors.toSet());
 
         Map<Long, String> nomeSkillsUsuario = usuarioSkills.stream()
-                .collect(Collectors.toMap(us -> us.getSkill().getId(), us -> us.getSkill().getNome(), (a, b) -> a));
+                .collect(Collectors.toMap(
+                        us -> us.getSkill().getId(),
+                        us -> us.getSkill().getNome(),
+                        (a, b) -> a
+                ));
 
         List<Trilha> trilhas = trilhaRepository.findAll();
-
         List<RecomendacaoResponseDTO> resultado = new ArrayList<>();
 
         for (Trilha trilha : trilhas) {
-            List<TrilhaSkillNecessaria> necessarias =
-                    trilhaSkillNecessariaRepository.findByTrilha_Id(trilha.getId());
+
+            // 🔹 Agora pega direto da entidade
+            List<TrilhaSkillNecessaria> necessarias = trilha.getSkills().stream().toList();
 
             if (necessarias.isEmpty()) {
-                continue; // trilha sem regra, pula
+                continue; // Sem regra de skill = ignora
             }
 
             Set<Long> idsSkillsNecessarias = necessarias.stream()
@@ -64,7 +69,7 @@ public class RecomendacaoService {
                     .count();
 
             BigDecimal percentual = BigDecimal
-                    .valueOf(qtdMatch * 100.0 / idsSkillsNecessarias.size())
+                    .valueOf((qtdMatch * 100.0) / idsSkillsNecessarias.size())
                     .setScale(2, RoundingMode.HALF_UP);
 
             List<String> nomesUsuarioPossui = idsSkillsNecessarias.stream()
@@ -86,8 +91,10 @@ public class RecomendacaoService {
             ));
         }
 
-        // Ordena da maior aderência pra menor
-        resultado.sort(Comparator.comparing(RecomendacaoResponseDTO::percentualAderencia).reversed());
+        resultado.sort(
+                Comparator.comparing(RecomendacaoResponseDTO::percentualAderencia).reversed()
+        );
+
         return resultado;
     }
 }

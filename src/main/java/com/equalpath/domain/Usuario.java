@@ -2,12 +2,10 @@ package com.equalpath.domain;
 
 import com.equalpath.domain.enums.ObjetivoCarreira;
 import com.equalpath.domain.enums.StatusPerfil;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "USUARIO")
@@ -19,44 +17,40 @@ import java.util.Set;
 public class Usuario {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usuario_seq")
+    @SequenceGenerator(
+            name = "usuario_seq",
+            sequenceName = "SEQ_USUARIO", // sequence já criada no Oracle
+            allocationSize = 1
+    )
     @Column(name = "IDUSUARIO")
     private Long id;
 
-    @Column(name = "NOME", nullable = false, length = 100)
+    @Column(name = "NOME", length = 100, nullable = false)
     private String nome;
 
-    @Column(name = "SOBRENOME", nullable = false, length = 200)
+    // 🔁 alinhado com VARCHAR2(100) do banco
+    @Column(name = "SOBRENOME", length = 100, nullable = false)
     private String sobrenome;
 
-    @Column(name = "EMAIL", nullable = false, unique = true, length = 150)
+    @Column(name = "EMAIL", length = 150, nullable = false, unique = true)
     private String email;
 
     @Column(name = "TELEFONE", length = 20)
     private String telefone;
 
-    @Column(name = "DTCADASTRO", nullable = false)
-    private LocalDate dtCadastro;
-
-    @Column(name = "ESTADO", columnDefinition = "CHAR(2)")
+    // 🔁 agora bate com CHAR(2) do Oracle (corrige o erro de validação)
+    @Column(name = "ESTADO", columnDefinition = "CHAR(2)", nullable = false)
     private String estado;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "OBJETIVOCARREIRA", nullable = false, length = 30)
+    @Column(name = "OBJETIVOCARREIRA", nullable = false, length = 500)
     private ObjetivoCarreira objetivoCarreira;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUSPERFIL", nullable = false, length = 20)
     private StatusPerfil statusPerfil;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private Set<UsuarioArea> areas = new HashSet<>();
-
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private Set<UsuarioSkill> skills = new HashSet<>();
-
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private Set<UsuarioTrilha> trilhas = new HashSet<>();
+    @Column(name = "DTCADASTRO", nullable = false)
+    private LocalDate dtCadastro;
 }

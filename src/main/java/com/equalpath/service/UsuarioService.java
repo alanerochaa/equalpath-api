@@ -1,6 +1,7 @@
 package com.equalpath.service;
 
 import com.equalpath.domain.Usuario;
+import com.equalpath.domain.enums.StatusPerfil;
 import com.equalpath.dto.UsuarioRequestDTO;
 import com.equalpath.dto.UsuarioResponseDTO;
 import com.equalpath.exception.NotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +33,10 @@ public class UsuarioService {
         usuario.setSobrenome(dto.sobrenome());
         usuario.setEmail(dto.email());
         usuario.setTelefone(dto.telefone());
-        usuario.setEstado(dto.estado());
+
+        // normaliza UF para maiúsculo
+        usuario.setEstado(dto.estado() != null ? dto.estado().toUpperCase() : null);
+
         usuario.setObjetivoCarreira(dto.objetivoCarreira());
         usuario.setStatusPerfil(dto.statusPerfil());
         usuario.setDtCadastro(LocalDate.now()); // sistema define data de cadastro
@@ -53,6 +58,7 @@ public class UsuarioService {
 
     // =========================================
     // LIST paginado + filtro por nome/sobrenome
+    // (mantido para atender requisito de paginação)
     // =========================================
     @Transactional(readOnly = true)
     public Page<UsuarioResponseDTO> listar(String nome, Pageable pageable) {
@@ -71,6 +77,27 @@ public class UsuarioService {
     }
 
     // =========================================
+    // LIST sem paginação, filtrando por StatusPerfil
+    // GET /api/usuarios/status?statusPerfil=ATIVO (exemplo de uso no controller)
+    // =========================================
+    @Transactional(readOnly = true)
+    public List<UsuarioResponseDTO> listarPorStatus(StatusPerfil statusPerfil) {
+
+        List<Usuario> usuarios;
+
+        if (statusPerfil != null) {
+            usuarios = usuarioRepository.findByStatusPerfil(statusPerfil);
+        } else {
+            // se não vier status, devolve tudo (sem filtro)
+            usuarios = usuarioRepository.findAll();
+        }
+
+        return usuarios.stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    // =========================================
     // UPDATE
     // =========================================
     @Transactional
@@ -83,10 +110,10 @@ public class UsuarioService {
         usuario.setSobrenome(dto.sobrenome());
         usuario.setEmail(dto.email());
         usuario.setTelefone(dto.telefone());
-        usuario.setEstado(dto.estado());
+        usuario.setEstado(dto.estado() != null ? dto.estado().toUpperCase() : null);
         usuario.setObjetivoCarreira(dto.objetivoCarreira());
         usuario.setStatusPerfil(dto.statusPerfil());
-        // dtCadastro não é alterado no update
+        // dtCadastro permanece o original
 
         Usuario atualizado = usuarioRepository.save(usuario);
         return mapToResponse(atualizado);
@@ -97,10 +124,10 @@ public class UsuarioService {
     // =========================================
     @Transactional
     public void excluir(Long id) {
-        if (!usuarioRepository.existsById(id)) {
-            throw new NotFoundException("Usuário não encontrado: " + id);
-        }
-        usuarioRepository.deleteById(id);
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado: " + id));
+
+        usuarioRepository.delete(usuario); // garante cascade nas relações
     }
 
     // =========================================

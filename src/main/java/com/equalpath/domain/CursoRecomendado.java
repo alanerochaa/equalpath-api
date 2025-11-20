@@ -14,7 +14,9 @@ import lombok.*;
 public class CursoRecomendado {
 
     @Id
-    @Column(name = "IDCURSO") // coluna física no Oracle
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_curso")
+    @SequenceGenerator(name = "seq_curso", sequenceName = "SEQ_CURSO", allocationSize = 1)
+    @Column(name = "IDCURSO")
     private Long id;
 
     @Column(name = "NOME", nullable = false, length = 200)
@@ -24,11 +26,11 @@ public class CursoRecomendado {
     private String url;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TRILHA_IDTRILHA", nullable = false) // igual à FK da tabela
+    @JoinColumn(name = "TRILHA_IDTRILHA", nullable = false)
     private Trilha trilha;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "PLATAFORMA", nullable = false, length = 50)
+    @Column(name = "PLATAFORMA", nullable = false, length = 100)
     private PlataformaCurso plataforma;
 
     @Column(name = "DURACAOHORAS", nullable = false)

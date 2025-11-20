@@ -24,9 +24,9 @@ public class TrilhaService {
         Trilha trilha = new Trilha();
         trilha.setNome(dto.nome());
         trilha.setDescricao(dto.descricao());
-        trilha.setNivel(dto.nivel());
-        trilha.setObjetivo(dto.objetivo());
-        trilha.setStatus(dto.status());
+        trilha.setNivel(dto.nivel());          // enum NivelTrilha
+        trilha.setObjetivo(dto.objetivo());    // String (texto livre)
+        trilha.setStatus(dto.status());        // enum StatusTrilha
         trilha.setDtCriacao(LocalDate.now());
 
         trilha = trilhaRepository.save(trilha);
@@ -67,7 +67,8 @@ public class TrilhaService {
 
     private Trilha getById(Long id) {
         return trilhaRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Trilha não encontrada para o id " + id));
+                .orElseThrow(() ->
+                        new NotFoundException("Trilha não encontrada para o id " + id));
     }
 
     private TrilhaResponseDTO toResponse(Trilha trilha) {
@@ -76,7 +77,7 @@ public class TrilhaService {
                 trilha.getNome(),
                 trilha.getDescricao(),
                 trilha.getNivel(),
-                trilha.getObjetivo(),
+                trilha.getObjetivo(),   // String
                 trilha.getStatus(),
                 trilha.getDtCriacao()
         );

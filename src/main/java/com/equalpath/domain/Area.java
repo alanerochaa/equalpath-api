@@ -3,6 +3,7 @@ package com.equalpath.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,19 +18,21 @@ import java.util.Set;
 public class Area {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_area")
+    @SequenceGenerator(name = "seq_area", sequenceName = "SEQ_AREA", allocationSize = 1)
     @Column(name = "IDAREA")
     private Long id;
 
     @Column(name = "NOME", nullable = false, length = 100)
     private String nome;
 
-    @Column(name = "DESCRICAO", length = 300)
+    @Column(name = "DESCRICAO", nullable = false, length = 300)
     private String descricao;
 
     @Column(name = "DTCRIACAO", nullable = false)
     private LocalDate dtCriacao;
 
     @OneToMany(mappedBy = "area", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore // evita loop UsuarioArea -> Area -> UsuarioArea
+    @JsonIgnore
     private Set<UsuarioArea> usuarios = new HashSet<>();
 }

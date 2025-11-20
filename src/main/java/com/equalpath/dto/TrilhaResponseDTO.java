@@ -11,7 +11,7 @@ public record TrilhaResponseDTO(
         String nome,
         String descricao,
         NivelTrilha nivel,
-        ObjetivoCarreira objetivo,
+        String objetivo,
         StatusTrilha status,
         LocalDate dtCriacao
 ) {}
