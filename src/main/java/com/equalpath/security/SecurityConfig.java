@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableMethodSecurity
@@ -51,8 +52,8 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // público: raiz da aplicação e erro
-                        .requestMatchers("/", "/error").permitAll()
+                        // público: raiz da aplicação, home HATEOAS e erro
+                        .requestMatchers("/", "/home", "/home/**", "/error").permitAll()
 
                         // público: swagger / openapi
                         .requestMatchers(
@@ -67,7 +68,10 @@ public class SecurityConfig {
                         // público: health-checks
                         .requestMatchers("/actuator/health", "/health").permitAll()
 
-                        // demais rotas: exigem JWT
+                        // público: TODOS os GET da API (para você testar no browser)
+                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+
+                        // qualquer outra coisa exige JWT
                         .anyRequest().authenticated()
                 )
                 .httpBasic(AbstractHttpConfigurer::disable)

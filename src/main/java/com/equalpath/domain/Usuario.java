@@ -4,7 +4,6 @@ import com.equalpath.domain.enums.ObjetivoCarreira;
 import com.equalpath.domain.enums.StatusPerfil;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDate;
 
 @Entity
@@ -20,7 +19,7 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usuario_seq")
     @SequenceGenerator(
             name = "usuario_seq",
-            sequenceName = "SEQ_USUARIO", // sequence já criada no Oracle
+            sequenceName = "SEQ_USUARIO",
             allocationSize = 1
     )
     @Column(name = "IDUSUARIO")
@@ -29,7 +28,6 @@ public class Usuario {
     @Column(name = "NOME", length = 100, nullable = false)
     private String nome;
 
-    // 🔁 alinhado com VARCHAR2(100) do banco
     @Column(name = "SOBRENOME", length = 100, nullable = false)
     private String sobrenome;
 
@@ -39,7 +37,6 @@ public class Usuario {
     @Column(name = "TELEFONE", length = 20)
     private String telefone;
 
-    // 🔁 agora bate com CHAR(2) do Oracle (corrige o erro de validação)
     @Column(name = "ESTADO", columnDefinition = "CHAR(2)", nullable = false)
     private String estado;
 

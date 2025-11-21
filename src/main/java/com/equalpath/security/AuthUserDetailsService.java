@@ -11,20 +11,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthUserDetailsService implements UserDetailsService {
 
-    // NÃO depende mais do bean de SecurityConfig -> quebra o ciclo
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        // Usuário fixo só pra autenticação da GS
+        // Usuário fixo só pra autenticação
         if (!"admin".equalsIgnoreCase(username)) {
             throw new UsernameNotFoundException("Usuário não encontrado: " + username);
         }
 
         return User.builder()
                 .username("admin")
-                .password(passwordEncoder.encode("admin")) // senha = admin
+                .password(passwordEncoder.encode("codegirls"))
                 .roles("ADMIN")
                 .build();
     }

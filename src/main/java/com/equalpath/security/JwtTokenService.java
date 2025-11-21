@@ -23,9 +23,7 @@ public class JwtTokenService {
         this.expirationMinutes = expirationMinutes;
     }
 
-    // ============================================================
-    //  GERAÇÃO DO TOKEN
-    // ============================================================
+
     public String generateToken(String username) {
         Instant now = Instant.now();
         Instant exp = now.plus(expirationMinutes, ChronoUnit.MINUTES);
@@ -38,18 +36,12 @@ public class JwtTokenService {
                 .compact();
     }
 
-    // ============================================================
-    //  EXTRAÇÃO DO USERNAME
-    // ============================================================
     public String getUsernameFromToken(String token) {
         return parseClaims(token)
                 .getBody()
                 .getSubject();
     }
 
-    // ============================================================
-    //  VALIDAÇÃO DO TOKEN
-    // ============================================================
     public boolean isTokenValid(String token) {
         try {
             parseClaims(token);
@@ -59,9 +51,6 @@ public class JwtTokenService {
         }
     }
 
-    // ============================================================
-    //  PARSE DOS CLAIMS
-    // ============================================================
     private Jws<Claims> parseClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -69,9 +58,6 @@ public class JwtTokenService {
                 .parseClaimsJws(token);
     }
 
-    // ============================================================
-    //  EXTRAÇÃO DO TOKEN DO HEADER (NOVO)
-    // ============================================================
     public String extractToken(jakarta.servlet.http.HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
 

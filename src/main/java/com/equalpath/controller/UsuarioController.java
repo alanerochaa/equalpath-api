@@ -1,6 +1,7 @@
 package com.equalpath.controller;
 
 import com.equalpath.domain.enums.StatusPerfil;
+import com.equalpath.dto.MensagemResponseDTO;
 import com.equalpath.dto.UsuarioRequestDTO;
 import com.equalpath.dto.UsuarioResponseDTO;
 import com.equalpath.service.UsuarioService;
@@ -11,11 +12,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.net.URI;
 import java.util.List;
-import java.util.Map;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -40,9 +44,21 @@ public class UsuarioController {
             @ApiResponse(responseCode = "409", description = "Conflito de dados (por exemplo, e-mail já cadastrado)."),
             @ApiResponse(responseCode = "500", description = "Erro interno ao criar usuário.")
     })
-    public ResponseEntity<UsuarioResponseDTO> criar(@Valid @RequestBody UsuarioRequestDTO dto) {
+    public ResponseEntity<EntityModel<UsuarioResponseDTO>> criar(
+            @Valid @RequestBody UsuarioRequestDTO dto
+    ) {
         UsuarioResponseDTO response = usuarioService.criar(dto);
-        return ResponseEntity.status(201).body(response);
+
+        EntityModel<UsuarioResponseDTO> resource = EntityModel.of(
+                response,
+                linkTo(methodOn(UsuarioController.class).buscarPorId(response.id())).withSelfRel(),
+                linkTo(methodOn(UsuarioController.class).listarPorStatus(null)).withRel("usuarios")
+        );
+
+        URI location = linkTo(methodOn(UsuarioController.class)
+                .buscarPorId(response.id())).toUri();
+
+        return ResponseEntity.created(location).body(resource);
     }
 
     @GetMapping("/{id}")
@@ -55,9 +71,16 @@ public class UsuarioController {
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado."),
             @ApiResponse(responseCode = "500", description = "Erro interno ao consultar usuário.")
     })
-    public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<UsuarioResponseDTO>> buscarPorId(@PathVariable Long id) {
         UsuarioResponseDTO response = usuarioService.buscarPorId(id);
-        return ResponseEntity.ok(response);
+
+        EntityModel<UsuarioResponseDTO> resource = EntityModel.of(
+                response,
+                linkTo(methodOn(UsuarioController.class).buscarPorId(id)).withSelfRel(),
+                linkTo(methodOn(UsuarioController.class).listarPorStatus(null)).withRel("usuarios")
+        );
+
+        return ResponseEntity.ok(resource);
     }
 
     @GetMapping("/status")
@@ -71,11 +94,25 @@ public class UsuarioController {
             @ApiResponse(responseCode = "400", description = "Parâmetro de status inválido."),
             @ApiResponse(responseCode = "500", description = "Erro interno ao listar usuários.")
     })
-    public ResponseEntity<List<UsuarioResponseDTO>> listarPorStatus(
+    public ResponseEntity<CollectionModel<EntityModel<UsuarioResponseDTO>>> listarPorStatus(
             @RequestParam(required = false) StatusPerfil statusPerfil
     ) {
-        List<UsuarioResponseDTO> response = usuarioService.listarPorStatus(statusPerfil);
-        return ResponseEntity.ok(response);
+        List<UsuarioResponseDTO> usuarios = usuarioService.listarPorStatus(statusPerfil);
+
+        List<EntityModel<UsuarioResponseDTO>> content = usuarios.stream()
+                .map(u -> EntityModel.of(
+                        u,
+                        linkTo(methodOn(UsuarioController.class).buscarPorId(u.id())).withSelfRel()
+                ))
+                .toList();
+
+        CollectionModel<EntityModel<UsuarioResponseDTO>> collectionModel =
+                CollectionModel.of(
+                        content,
+                        linkTo(methodOn(UsuarioController.class).listarPorStatus(statusPerfil)).withSelfRel()
+                );
+
+        return ResponseEntity.ok(collectionModel);
     }
 
     @PutMapping("/{id}")
@@ -89,12 +126,19 @@ public class UsuarioController {
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado."),
             @ApiResponse(responseCode = "500", description = "Erro interno ao atualizar usuário.")
     })
-    public ResponseEntity<UsuarioResponseDTO> atualizar(
+    public ResponseEntity<EntityModel<UsuarioResponseDTO>> atualizar(
             @PathVariable Long id,
             @Valid @RequestBody UsuarioRequestDTO dto
     ) {
         UsuarioResponseDTO response = usuarioService.atualizar(id, dto);
-        return ResponseEntity.ok(response);
+
+        EntityModel<UsuarioResponseDTO> resource = EntityModel.of(
+                response,
+                linkTo(methodOn(UsuarioController.class).buscarPorId(id)).withSelfRel(),
+                linkTo(methodOn(UsuarioController.class).listarPorStatus(null)).withRel("usuarios")
+        );
+
+        return ResponseEntity.ok(resource);
     }
 
     @DeleteMapping("/{id}")
@@ -107,15 +151,17 @@ public class UsuarioController {
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado."),
             @ApiResponse(responseCode = "500", description = "Erro interno ao excluir usuário.")
     })
-    public ResponseEntity<?> excluir(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<MensagemResponseDTO>> excluir(@PathVariable Long id) {
         usuarioService.excluir(id);
 
-        return ResponseEntity.ok(
-                Map.of(
-                        "status", "sucesso",
-                        "mensagem", "Usuário removido com sucesso.",
-                        "idExcluido", id
-                )
+        MensagemResponseDTO mensagem =
+                new MensagemResponseDTO("Usuário removido com sucesso.");
+
+        EntityModel<MensagemResponseDTO> resource = EntityModel.of(
+                mensagem,
+                linkTo(methodOn(UsuarioController.class).listarPorStatus(null)).withRel("usuarios")
         );
+
+        return ResponseEntity.ok(resource);
     }
 }

@@ -8,10 +8,13 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/recomendacoes")
@@ -35,12 +38,29 @@ public class RecomendacaoController {
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado."),
             @ApiResponse(responseCode = "500", description = "Erro interno ao processar recomendações.")
     })
-    public ResponseEntity<List<RecomendacaoResponseDTO>> recomendarPorUsuario(
+    public ResponseEntity<CollectionModel<EntityModel<RecomendacaoResponseDTO>>> recomendarPorUsuario(
             @PathVariable Long idUsuario
     ) {
         List<RecomendacaoResponseDTO> recomendacoes =
                 recomendacaoService.recomendarPorUsuario(idUsuario);
 
-        return ResponseEntity.ok(recomendacoes);
+        List<EntityModel<RecomendacaoResponseDTO>> content = recomendacoes.stream()
+                .map(r -> EntityModel.of(r))
+                .toList();
+
+        CollectionModel<EntityModel<RecomendacaoResponseDTO>> collectionModel =
+                CollectionModel.of(
+                        content,
+                        linkTo(methodOn(RecomendacaoController.class)
+                                .recomendarPorUsuario(idUsuario)).withSelfRel(),
+                        linkTo(methodOn(UsuarioController.class)
+                                .buscarPorId(idUsuario)).withRel("usuario"),
+                        linkTo(methodOn(TrilhaController.class)
+                                .listar(null)).withRel("trilhas"),
+                        linkTo(methodOn(CursoRecomendadoController.class)
+                                .listarPorTrilha(null, null)).withRel("cursos")
+                );
+
+        return ResponseEntity.ok(collectionModel);
     }
 }

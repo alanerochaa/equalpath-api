@@ -17,9 +17,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // ============================================================
     // 404 – Not Found
-    // ============================================================
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException ex, WebRequest request) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -33,9 +31,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // ============================================================
     // 400 – Validation Error
-    // ============================================================
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex,
                                                           WebRequest request) {
@@ -59,9 +55,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // ============================================================
     // 400 – JSON malformado / erro de enum / corpo inválido
-    // ============================================================
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleUnreadable(HttpMessageNotReadableException ex,
                                                           WebRequest request) {
@@ -86,9 +80,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // ============================================================
     // 409 – Data conflict (unique, foreign key, etc)
-    // ============================================================
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleConflict(DataIntegrityViolationException ex,
                                                         WebRequest request) {
@@ -114,9 +106,8 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // ============================================================
+
     // 500 – Generic Internal Error
-    // ============================================================
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex, WebRequest request) {
 
@@ -131,10 +122,6 @@ public class GlobalExceptionHandler {
         );
     }
 
-
-    // ============================================================
-    // JSON Padronizado
-    // ============================================================
     public record ErrorResponse(
             LocalDateTime timestamp,
             int status,

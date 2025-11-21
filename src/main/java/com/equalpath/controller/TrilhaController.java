@@ -1,6 +1,7 @@
 package com.equalpath.controller;
 
 import com.equalpath.domain.enums.StatusTrilha;
+import com.equalpath.dto.MensagemResponseDTO;
 import com.equalpath.dto.TrilhaRequestDTO;
 import com.equalpath.dto.TrilhaResponseDTO;
 import com.equalpath.service.TrilhaService;
@@ -11,11 +12,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.net.URI;
 import java.util.List;
-import java.util.Map;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/trilhas")
@@ -35,11 +39,24 @@ public class TrilhaController {
             description = "Registra uma nova trilha de carreira, vinculada a skills e perfil de usuário."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Trilha criada com sucesso."),
+            @ApiResponse(responseCode = "201", description = "Trilha criado com sucesso."),
             @ApiResponse(responseCode = "400", description = "Dados inválidos para criação.")
     })
-    public ResponseEntity<TrilhaResponseDTO> criar(@Valid @RequestBody TrilhaRequestDTO dto) {
-        return ResponseEntity.status(201).body(trilhaService.criar(dto));
+    public ResponseEntity<EntityModel<TrilhaResponseDTO>> criar(
+            @Valid @RequestBody TrilhaRequestDTO dto
+    ) {
+        TrilhaResponseDTO response = trilhaService.criar(dto);
+
+        EntityModel<TrilhaResponseDTO> resource = EntityModel.of(
+                response,
+                linkTo(methodOn(TrilhaController.class).buscarPorId(response.id())).withSelfRel(),
+                linkTo(methodOn(TrilhaController.class).listar(null)).withRel("trilhas")
+        );
+
+        URI location = linkTo(methodOn(TrilhaController.class)
+                .buscarPorId(response.id())).toUri();
+
+        return ResponseEntity.created(location).body(resource);
     }
 
     @GetMapping("/{id}")
@@ -51,8 +68,16 @@ public class TrilhaController {
             @ApiResponse(responseCode = "200", description = "Trilha encontrada."),
             @ApiResponse(responseCode = "404", description = "Trilha não encontrada.")
     })
-    public ResponseEntity<TrilhaResponseDTO> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(trilhaService.buscarPorId(id));
+    public ResponseEntity<EntityModel<TrilhaResponseDTO>> buscarPorId(@PathVariable Long id) {
+        TrilhaResponseDTO response = trilhaService.buscarPorId(id);
+
+        EntityModel<TrilhaResponseDTO> resource = EntityModel.of(
+                response,
+                linkTo(methodOn(TrilhaController.class).buscarPorId(id)).withSelfRel(),
+                linkTo(methodOn(TrilhaController.class).listar(null)).withRel("trilhas")
+        );
+
+        return ResponseEntity.ok(resource);
     }
 
     @GetMapping
@@ -60,10 +85,25 @@ public class TrilhaController {
             summary = "Listar trilhas",
             description = "Retorna as trilhas cadastradas, com filtro opcional por status."
     )
-    public ResponseEntity<List<TrilhaResponseDTO>> listar(
+    public ResponseEntity<CollectionModel<EntityModel<TrilhaResponseDTO>>> listar(
             @RequestParam(required = false) StatusTrilha status
     ) {
-        return ResponseEntity.ok(trilhaService.listar(status));
+        List<TrilhaResponseDTO> trilhas = trilhaService.listar(status);
+
+        List<EntityModel<TrilhaResponseDTO>> content = trilhas.stream()
+                .map(t -> EntityModel.of(
+                        t,
+                        linkTo(methodOn(TrilhaController.class).buscarPorId(t.id())).withSelfRel()
+                ))
+                .toList();
+
+        CollectionModel<EntityModel<TrilhaResponseDTO>> collectionModel =
+                CollectionModel.of(
+                        content,
+                        linkTo(methodOn(TrilhaController.class).listar(status)).withSelfRel()
+                );
+
+        return ResponseEntity.ok(collectionModel);
     }
 
     @PutMapping("/{id}")
@@ -75,11 +115,19 @@ public class TrilhaController {
             @ApiResponse(responseCode = "200", description = "Trilha atualizada."),
             @ApiResponse(responseCode = "404", description = "Trilha não encontrada.")
     })
-    public ResponseEntity<TrilhaResponseDTO> atualizar(
+    public ResponseEntity<EntityModel<TrilhaResponseDTO>> atualizar(
             @PathVariable Long id,
             @Valid @RequestBody TrilhaRequestDTO dto
     ) {
-        return ResponseEntity.ok(trilhaService.atualizar(id, dto));
+        TrilhaResponseDTO response = trilhaService.atualizar(id, dto);
+
+        EntityModel<TrilhaResponseDTO> resource = EntityModel.of(
+                response,
+                linkTo(methodOn(TrilhaController.class).buscarPorId(id)).withSelfRel(),
+                linkTo(methodOn(TrilhaController.class).listar(null)).withRel("trilhas")
+        );
+
+        return ResponseEntity.ok(resource);
     }
 
     @DeleteMapping("/{id}")
@@ -91,14 +139,17 @@ public class TrilhaController {
             @ApiResponse(responseCode = "200", description = "Trilha excluída."),
             @ApiResponse(responseCode = "404", description = "Trilha não encontrada.")
     })
-    public ResponseEntity<?> excluir(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<MensagemResponseDTO>> excluir(@PathVariable Long id) {
         trilhaService.excluir(id);
-        return ResponseEntity.ok(
-                Map.of(
-                        "status", "sucesso",
-                        "mensagem", "Trilha removida com sucesso.",
-                        "idExcluido", id
-                )
+
+        MensagemResponseDTO mensagem =
+                new MensagemResponseDTO("Trilha removida com sucesso.");
+
+        EntityModel<MensagemResponseDTO> resource = EntityModel.of(
+                mensagem,
+                linkTo(methodOn(TrilhaController.class).listar(null)).withRel("trilhas")
         );
+
+        return ResponseEntity.ok(resource);
     }
 }

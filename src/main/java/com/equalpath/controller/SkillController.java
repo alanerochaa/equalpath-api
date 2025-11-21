@@ -1,5 +1,6 @@
 package com.equalpath.controller;
 
+import com.equalpath.dto.MensagemResponseDTO;
 import com.equalpath.dto.SkillRequestDTO;
 import com.equalpath.dto.SkillResponseDTO;
 import com.equalpath.service.SkillService;
@@ -10,11 +11,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
-import java.util.Map;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/skills")
@@ -37,9 +43,21 @@ public class SkillController {
             @ApiResponse(responseCode = "201", description = "Skill criada com sucesso."),
             @ApiResponse(responseCode = "400", description = "Dados inválidos para criação da skill.")
     })
-    public ResponseEntity<SkillResponseDTO> criar(@Valid @RequestBody SkillRequestDTO dto) {
+    public ResponseEntity<EntityModel<SkillResponseDTO>> criar(
+            @Valid @RequestBody SkillRequestDTO dto
+    ) {
         SkillResponseDTO response = skillService.criar(dto);
-        return ResponseEntity.status(201).body(response);
+
+        EntityModel<SkillResponseDTO> resource = EntityModel.of(
+                response,
+                linkTo(methodOn(SkillController.class).buscarPorId(response.id())).withSelfRel(),
+                linkTo(methodOn(SkillController.class).listar()).withRel("skills")
+        );
+
+        URI location = linkTo(methodOn(SkillController.class)
+                .buscarPorId(response.id())).toUri();
+
+        return ResponseEntity.created(location).body(resource);
     }
 
     @GetMapping("/{id}")
@@ -51,8 +69,16 @@ public class SkillController {
             @ApiResponse(responseCode = "200", description = "Skill localizada com sucesso."),
             @ApiResponse(responseCode = "404", description = "Skill não encontrada.")
     })
-    public ResponseEntity<SkillResponseDTO> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(skillService.buscarPorId(id));
+    public ResponseEntity<EntityModel<SkillResponseDTO>> buscarPorId(@PathVariable Long id) {
+        SkillResponseDTO response = skillService.buscarPorId(id);
+
+        EntityModel<SkillResponseDTO> resource = EntityModel.of(
+                response,
+                linkTo(methodOn(SkillController.class).buscarPorId(id)).withSelfRel(),
+                linkTo(methodOn(SkillController.class).listar()).withRel("skills")
+        );
+
+        return ResponseEntity.ok(resource);
     }
 
     @GetMapping
@@ -60,8 +86,23 @@ public class SkillController {
             summary = "Listar skills",
             description = "Retorna todas as skills disponíveis no catálogo."
     )
-    public ResponseEntity<List<SkillResponseDTO>> listar() {
-        return ResponseEntity.ok(skillService.listar());
+    public ResponseEntity<CollectionModel<EntityModel<SkillResponseDTO>>> listar() {
+        List<SkillResponseDTO> skills = skillService.listar();
+
+        List<EntityModel<SkillResponseDTO>> content = skills.stream()
+                .map(s -> EntityModel.of(
+                        s,
+                        linkTo(methodOn(SkillController.class).buscarPorId(s.id())).withSelfRel()
+                ))
+                .toList();
+
+        CollectionModel<EntityModel<SkillResponseDTO>> collectionModel =
+                CollectionModel.of(
+                        content,
+                        linkTo(methodOn(SkillController.class).listar()).withSelfRel()
+                );
+
+        return ResponseEntity.ok(collectionModel);
     }
 
     @PutMapping("/{id}")
@@ -73,12 +114,19 @@ public class SkillController {
             @ApiResponse(responseCode = "200", description = "Skill atualizada com sucesso."),
             @ApiResponse(responseCode = "404", description = "Skill não encontrada.")
     })
-    public ResponseEntity<SkillResponseDTO> atualizar(
+    public ResponseEntity<EntityModel<SkillResponseDTO>> atualizar(
             @PathVariable Long id,
             @Valid @RequestBody SkillRequestDTO dto
     ) {
         SkillResponseDTO response = skillService.atualizar(id, dto);
-        return ResponseEntity.ok(response);
+
+        EntityModel<SkillResponseDTO> resource = EntityModel.of(
+                response,
+                linkTo(methodOn(SkillController.class).buscarPorId(id)).withSelfRel(),
+                linkTo(methodOn(SkillController.class).listar()).withRel("skills")
+        );
+
+        return ResponseEntity.ok(resource);
     }
 
     @DeleteMapping("/{id}")
@@ -90,14 +138,17 @@ public class SkillController {
             @ApiResponse(responseCode = "200", description = "Skill removida com sucesso."),
             @ApiResponse(responseCode = "404", description = "Skill não encontrada.")
     })
-    public ResponseEntity<?> excluir(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<MensagemResponseDTO>> excluir(@PathVariable Long id) {
         skillService.excluir(id);
-        return ResponseEntity.ok(
-                Map.of(
-                        "status", "sucesso",
-                        "mensagem", "Skill removida com sucesso.",
-                        "idExcluido", id
-                )
+
+        MensagemResponseDTO mensagem =
+                new MensagemResponseDTO("Skill removida com sucesso.");
+
+        EntityModel<MensagemResponseDTO> resource = EntityModel.of(
+                mensagem,
+                linkTo(methodOn(SkillController.class).listar()).withRel("skills")
         );
+
+        return ResponseEntity.ok(resource);
     }
 }

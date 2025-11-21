@@ -3,6 +3,7 @@ package com.equalpath.controller;
 import com.equalpath.domain.enums.PlataformaCurso;
 import com.equalpath.dto.CursoRecomendadoRequestDTO;
 import com.equalpath.dto.CursoRecomendadoResponseDTO;
+import com.equalpath.dto.MensagemResponseDTO;
 import com.equalpath.service.CursoRecomendadoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,11 +12,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
-import java.util.Map;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/cursos")
@@ -37,14 +43,26 @@ public class CursoRecomendadoController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Curso criado com sucesso."),
             @ApiResponse(responseCode = "400", description = "Payload inválido."),
-            @ApiResponse(responseCode = "404", description = "Trilha vinculada não encontrado."),
+            @ApiResponse(responseCode = "404", description = "Trilha vinculada não encontrada."),
             @ApiResponse(responseCode = "500", description = "Erro interno ao criar curso.")
     })
-    public ResponseEntity<CursoRecomendadoResponseDTO> criar(
+    public ResponseEntity<EntityModel<CursoRecomendadoResponseDTO>> criar(
             @Valid @RequestBody CursoRecomendadoRequestDTO dto
     ) {
         CursoRecomendadoResponseDTO response = cursoService.criar(dto);
-        return ResponseEntity.status(201).body(response);
+
+        EntityModel<CursoRecomendadoResponseDTO> resource = EntityModel.of(
+                response,
+                linkTo(methodOn(CursoRecomendadoController.class)
+                        .buscarPorId(response.id())).withSelfRel(),
+                linkTo(methodOn(CursoRecomendadoController.class)
+                        .listarPorTrilha(response.idTrilha(), null)).withRel("cursos_da_trilha")
+        );
+
+        URI location = linkTo(methodOn(CursoRecomendadoController.class)
+                .buscarPorId(response.id())).toUri();
+
+        return ResponseEntity.created(location).body(resource);
     }
 
     @GetMapping("/{id}")
@@ -57,8 +75,18 @@ public class CursoRecomendadoController {
             @ApiResponse(responseCode = "404", description = "Curso não encontrado."),
             @ApiResponse(responseCode = "500", description = "Erro ao consultar curso.")
     })
-    public ResponseEntity<CursoRecomendadoResponseDTO> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(cursoService.buscarPorId(id));
+    public ResponseEntity<EntityModel<CursoRecomendadoResponseDTO>> buscarPorId(@PathVariable Long id) {
+        CursoRecomendadoResponseDTO response = cursoService.buscarPorId(id);
+
+        EntityModel<CursoRecomendadoResponseDTO> resource = EntityModel.of(
+                response,
+                linkTo(methodOn(CursoRecomendadoController.class)
+                        .buscarPorId(id)).withSelfRel(),
+                linkTo(methodOn(CursoRecomendadoController.class)
+                        .listarPorTrilha(response.idTrilha(), null)).withRel("cursos_da_trilha")
+        );
+
+        return ResponseEntity.ok(resource);
     }
 
     @GetMapping
@@ -70,12 +98,29 @@ public class CursoRecomendadoController {
             @ApiResponse(responseCode = "200", description = "Cursos listados com sucesso."),
             @ApiResponse(responseCode = "500", description = "Erro ao listar cursos.")
     })
-    public ResponseEntity<List<CursoRecomendadoResponseDTO>> listarPorTrilha(
+    public ResponseEntity<CollectionModel<EntityModel<CursoRecomendadoResponseDTO>>> listarPorTrilha(
             @RequestParam Long idTrilha,
             @RequestParam(required = false) PlataformaCurso plataforma
     ) {
-        List<CursoRecomendadoResponseDTO> cursos = cursoService.listarPorTrilha(idTrilha, plataforma);
-        return ResponseEntity.ok(cursos);
+        List<CursoRecomendadoResponseDTO> cursos =
+                cursoService.listarPorTrilha(idTrilha, plataforma);
+
+        List<EntityModel<CursoRecomendadoResponseDTO>> content = cursos.stream()
+                .map(c -> EntityModel.of(
+                        c,
+                        linkTo(methodOn(CursoRecomendadoController.class)
+                                .buscarPorId(c.id())).withSelfRel()
+                ))
+                .toList();
+
+        CollectionModel<EntityModel<CursoRecomendadoResponseDTO>> collectionModel =
+                CollectionModel.of(
+                        content,
+                        linkTo(methodOn(CursoRecomendadoController.class)
+                                .listarPorTrilha(idTrilha, plataforma)).withSelfRel()
+                );
+
+        return ResponseEntity.ok(collectionModel);
     }
 
     @PutMapping("/{id}")
@@ -89,11 +134,21 @@ public class CursoRecomendadoController {
             @ApiResponse(responseCode = "404", description = "Curso não encontrado."),
             @ApiResponse(responseCode = "500", description = "Erro ao atualizar curso.")
     })
-    public ResponseEntity<CursoRecomendadoResponseDTO> atualizar(
+    public ResponseEntity<EntityModel<CursoRecomendadoResponseDTO>> atualizar(
             @PathVariable Long id,
             @Valid @RequestBody CursoRecomendadoRequestDTO dto
     ) {
-        return ResponseEntity.ok(cursoService.atualizar(id, dto));
+        CursoRecomendadoResponseDTO response = cursoService.atualizar(id, dto);
+
+        EntityModel<CursoRecomendadoResponseDTO> resource = EntityModel.of(
+                response,
+                linkTo(methodOn(CursoRecomendadoController.class)
+                        .buscarPorId(id)).withSelfRel(),
+                linkTo(methodOn(CursoRecomendadoController.class)
+                        .listarPorTrilha(response.idTrilha(), null)).withRel("cursos_da_trilha")
+        );
+
+        return ResponseEntity.ok(resource);
     }
 
     @DeleteMapping("/{id}")
@@ -106,15 +161,19 @@ public class CursoRecomendadoController {
             @ApiResponse(responseCode = "404", description = "Curso não encontrado."),
             @ApiResponse(responseCode = "500", description = "Erro ao excluir curso.")
     })
-    public ResponseEntity<?> excluir(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<MensagemResponseDTO>> excluir(@PathVariable Long id) {
         cursoService.excluir(id);
 
-        return ResponseEntity.ok(
-                Map.of(
-                        "status", "sucesso",
-                        "mensagem", "Curso recomendado removido com sucesso.",
-                        "idExcluido", id
-                )
+        MensagemResponseDTO mensagem =
+                new MensagemResponseDTO("Curso recomendado removido com sucesso.");
+
+        EntityModel<MensagemResponseDTO> resource = EntityModel.of(
+                mensagem,
+                // Link genérico para consulta de cursos por trilha; idTrilha será informado pelo consumidor
+                linkTo(methodOn(CursoRecomendadoController.class)
+                        .listarPorTrilha(null, null)).withRel("cursos_por_trilha")
         );
+
+        return ResponseEntity.ok(resource);
     }
 }
