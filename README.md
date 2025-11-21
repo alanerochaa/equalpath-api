@@ -30,30 +30,30 @@ A **EqualPath API** segue princípios de **Clean Architecture** e **DDD-lite**, 
 flowchart TD
     %% Camada de apresentação
     subgraph API_Camada_de_Apresentacao
-        A[Controllers REST<br/>Usuário, Skill, Trilha, CursoRecomendado,<br/>Recomendacao, Auth, Home]
+        A[Controllers REST: Usuario, Skill, Trilha, CursoRecomendado, Recomendacao, Auth, Home]
     end
 
     %% Camada de regras de negócio
     subgraph Application_Regras_de_Negocio
-        B[Services<br/>UsuarioService, SkillService,<br/>TrilhaService, CursoRecomendadoService,<br/>RecomendacaoService]
-        R[Motor de Recomendação<br/>(matching de skills x trilhas)]
-        G[DTOs Request/Response<br/>+ Bean Validation]
+        B[Services: UsuarioService, SkillService, TrilhaService, CursoRecomendadoService, RecomendacaoService]
+        R[Motor de Recomendacao: matching de skills x trilhas]
+        G[DTOs Request/Response + Bean Validation]
     end
 
     %% Camada de domínio
     subgraph Domain_Modelo_de_Dominio
-        C[Entidades JPA<br/>Usuario, Skill, Trilha,<br/>CursoRecomendado, Area,<br/>UsuarioSkill, UsuarioTrilha,<br/>TrilhaSkillNecessaria, UsuarioArea]
-        H[Enums<br/>ObjetivoCarreira, StatusPerfil,<br/>StatusTrilha, CategoriaSkill,<br/>TipoSkill, NivelTrilha,<br/>PlataformaCurso]
+        C[Entidades JPA: Usuario, Skill, Trilha, CursoRecomendado, Area, UsuarioSkill, UsuarioTrilha, TrilhaSkillNecessaria, UsuarioArea]
+        H[Enums: ObjetivoCarreira, StatusPerfil, StatusTrilha, CategoriaSkill, TipoSkill, NivelTrilha, PlataformaCurso]
     end
 
     %% Camada de infraestrutura, segurança e persistência
     subgraph Infrastructure_Persistencia_e_Seguranca
-        D[Repositories<br/>Spring Data JPA]
-        E[(Banco de Dados Oracle<br/>Schema EqualPath)]
-        I[Segurança / JWT<br/>SecurityConfig, JwtTokenService,<br/>JwtAuthenticationFilter, AuthUserDetailsService]
+        D[Repositories: Spring Data JPA]
+        E[(Banco de Dados Oracle - Schema EqualPath)]
+        I[Seguranca JWT: SecurityConfig, JwtTokenService, JwtAuthenticationFilter, AuthUserDetailsService]
     end
 
-    %% Fluxos de dependência
+    %% Fluxos de dependencia
     A --> B
     A --> I
     B --> R
@@ -63,8 +63,6 @@ flowchart TD
     D --> E
     C --> H
     B --> G
-
-    
 ```
 
 
