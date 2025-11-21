@@ -56,11 +56,18 @@
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
-		<!-- Oracle JDBC -->
+		<!-- Oracle JDBC (ambiente local / dev) -->
 		<dependency>
 			<groupId>com.oracle.database.jdbc</groupId>
 			<artifactId>ojdbc11</artifactId>
 			<version>23.4.0.24.05</version>
+		</dependency>
+
+		<!-- PostgreSQL (produção na nuvem / Render) -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 
 		<!-- Lombok -->
