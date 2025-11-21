@@ -24,7 +24,7 @@ Toda a camada de persistência é implementada em **Oracle Database**, garantind
 
 ## 🧩 Visão Geral e Arquitetura
 
-A **EqualPath API** segue princípios de **Clean Architecture** e **DDD-lite**, promovendo baixo acoplamento e alta coesão entre as camadas.
+A arquitetura da EqualPath foi estruturada com foco em escalabilidade, baixo acoplamento e alta coesão entre as camadas. A organização segue princípios de Clean Architecture e DDD-lite, garantindo clara separação de responsabilidades entre apresentação, regras de negócio, domínio, persistência e segurança.
 
 ```mermaid
 flowchart TD
@@ -242,11 +242,14 @@ http://localhost:8080/swagger-ui/index.html
 ```
 
 ## 🌐 URLs Principais da API
-| Finalidade                 | URL                                                 | Descrição                                                     |
-| -------------------------- | --------------------------------------------------- | ------------------------------------------------------------- |
-| 🏠 Endpoint inicial (home) | `http://localhost:8080/ | Verifica se a API está operacional e retorna mensagem padrão. |
-| 📖 Documentação Swagger UI | `http://localhost:8080/swagger-ui/index.html`       | Interface interativa para testar todos os endpoints.          |
-| 🔐 Autenticação (login)    | `http://localhost:8080/api/auth/login`              | Geração de token JWT para acesso aos recursos protegidos.     |
+## 🌐 URLs Principais da API
+
+| Finalidade                   | URL                                                                                          | Descrição                                                                                         |
+| --------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| 🏠 Endpoint inicial (Home)  | [`http://localhost:8080/`](http://localhost:8080/)                                           | Verifica se a EqualPath API está operacional e direciona para o Swagger ou rota `/home`.         |
+| 📊 Endpoint JSON (/home)    | [`http://localhost:8080/home`](http://localhost:8080/home)                                   | Retorna mensagem de status em JSON (com HATEOAS) e links para recursos principais da plataforma. |
+| 📖 Documentação Swagger UI  | [`http://localhost:8080/swagger-ui/index.html`](http://localhost:8080/swagger-ui/index.html) | Interface interativa gerada pelo Springdoc OpenAPI para testar todos os endpoints REST.          |
+| 🔐 Autenticação (login)     | [`http://localhost:8080/api/auth/login`](http://localhost:8080/api/auth/login)               | Endpoint responsável pela autenticação e geração do token JWT.                                   |
 
 ## 📡 Endpoints 
 
