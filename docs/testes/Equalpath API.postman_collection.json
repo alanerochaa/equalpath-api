@@ -1,0 +1,929 @@
+{
+	"info": {
+		"_postman_id": "40625fdc-7c9c-4274-b60b-c9268f489a2a",
+		"name": "Equalpath API",
+		"description": "API de recomendação de trilhas de carreira com base em skills do usuário.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49195647"
+	},
+	"item": [
+		{
+			"name": "Login/acesso/token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"codegirls\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET/home",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"codegirls\"\r\n}\r\n"
+				},
+				"url": {
+					"raw": "http://localhost:8080/home",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"home"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET/api/trilhas",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "codegirls",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/trilhas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"trilhas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get/trilhas/2",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/trilhas/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"trilhas",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT/api/trilhas/1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MzczNzA0MCwiZXhwIjoxNzYzNzQwNjQwfQ.T26VmQtba5t5ynOPCORW2AzSnXGJxkc1MKvgsu4Zen4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n               \r\n \"nome\": \"Backend Jr\",\r\n \"descricao\": \"APIs Java\",\r\n \"nivel\": \"INTERMEDIARIO\",\r\n \"objetivo\": \"Backend em squads\",\r\n \"status\": \"ATIVA\",\r\n \"dtCriacao\": \"2025-11-20\"\r\n               \r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/trilhas/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"trilhas",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE/api/trilhas/1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MzczNzA0MCwiZXhwIjoxNzYzNzQwNjQwfQ.T26VmQtba5t5ynOPCORW2AzSnXGJxkc1MKvgsu4Zen4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n               \r\n \"nome\": \"Backend Jr\",\r\n \"descricao\": \"APIs com Java\",\r\n \"nivel\": \"INTERMEDIARIO\",\r\n \"objetivo\": \"Backend em squads\",\r\n \"status\": \"ATIVA\",\r\n \"dtCriacao\": \"2025-11-20\"\r\n               \r\n}\r\n"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/trilhas/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"trilhas",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST/api/trilhas",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MzczNzA0MCwiZXhwIjoxNzYzNzQwNjQwfQ.T26VmQtba5t5ynOPCORW2AzSnXGJxkc1MKvgsu4Zen4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"Frontend\",\r\n  \"descricao\": \"Trilha focada em fundamentos de React\",\r\n  \"nivel\": \"INICIANTE\",\r\n  \"objetivo\": \"Preparar para atuar em squads front-end\",\r\n  \"status\": \"ATIVA\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/trilhas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"trilhas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET/api/cursos?idTrilha=5",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/cursos?idTrilha=5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cursos"
+					],
+					"query": [
+						{
+							"key": "idTrilha",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET/api/cursos/7",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/cursos/7",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cursos",
+						"7"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT/api/cursos/7",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MzczNzA0MCwiZXhwIjoxNzYzNzQwNjQwfQ.T26VmQtba5t5ynOPCORW2AzSnXGJxkc1MKvgsu4Zen4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nome\": \"Kotlin para Android\",\r\n    \"url\": \"https://curso.com/kotlin-android\",\r\n    \"idTrilha\": 5,\r\n    \"nomeTrilha\": \"Mobile Kotlin\",\r\n    \"plataforma\": \"UDEMY\",\r\n    \"duracaoHoras\": 18\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/cursos/7",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cursos",
+						"7"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE/api/cursos/7",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MzczNzA0MCwiZXhwIjoxNzYzNzQwNjQwfQ.T26VmQtba5t5ynOPCORW2AzSnXGJxkc1MKvgsu4Zen4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nome\": \"Kotlin para Android\",\r\n    \"url\": \"https://curso.com/kotlin-android\",\r\n    \"idTrilha\": 5,\r\n    \"nomeTrilha\": \"Mobile Kotlin\",\r\n    \"plataforma\": \"UDEMY\",\r\n    \"duracaoHoras\": 18\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/cursos/7",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cursos",
+						"7"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST/api/cursos",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MzczNzA0MCwiZXhwIjoxNzYzNzQwNjQwfQ.T26VmQtba5t5ynOPCORW2AzSnXGJxkc1MKvgsu4Zen4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"Formação React com Hooks e APIs\",\r\n  \"url\": \"https://www.udemy.com/course/react-hooks-completo/\",\r\n  \"idTrilha\": 22,\r\n  \"plataforma\": \"ALURA\",\r\n  \"duracaoHoras\": 20\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/cursos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cursos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET/api/recomendacoes/usuario/2",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/recomendacoes/usuario/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"recomendacoes",
+						"usuario",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET/api/skills",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/skills",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"skills"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET/api/skills/5",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/skills/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"skills",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT/api/skills/5",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MzczNzA0MCwiZXhwIjoxNzYzNzQwNjQwfQ.T26VmQtba5t5ynOPCORW2AzSnXGJxkc1MKvgsu4Zen4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"C#\",\r\n  \"descricao\": \"Backend\",\r\n  \"nivel\": \"BASICO\",\r\n  \"categoria\": \"BACKEND\",\r\n  \"tipo\": \"TECNICA\",\r\n  \"ultimoAcesso\": \"2025-11-15\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/skills/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"skills",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE/api/skills/5",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MzczNzA0MCwiZXhwIjoxNzYzNzQwNjQwfQ.T26VmQtba5t5ynOPCORW2AzSnXGJxkc1MKvgsu4Zen4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"C#\",\r\n  \"descricao\": \"Backend\",\r\n  \"nivel\": \"BASICO\",\r\n  \"categoria\": \"BACKEND\",\r\n  \"tipo\": \"TECNICA\",\r\n  \"ultimoAcesso\": \"2025-11-15\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/skills/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"skills",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST/api/skills",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MzczNzA0MCwiZXhwIjoxNzYzNzQwNjQwfQ.T26VmQtba5t5ynOPCORW2AzSnXGJxkc1MKvgsu4Zen4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"Boas Práticas de API REST\",\r\n  \"descricao\": \"Padrões de design para criação de APIs RESTful robustas.\",\r\n  \"nivel\": \"INTERMEDIARIO\",\r\n  \"categoria\": \"BACKEND\",\r\n  \"tipo\": \"TECNICA\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/skills",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"skills"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET/api/usuarios/status",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MzczNzA0MCwiZXhwIjoxNzYzNzQwNjQwfQ.T26VmQtba5t5ynOPCORW2AzSnXGJxkc1MKvgsu4Zen4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/usuarios/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"usuarios",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET/api/usuarios/1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/usuarios/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"usuarios",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT/api/usuarios/1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MzczNzA0MCwiZXhwIjoxNzYzNzQwNjQwfQ.T26VmQtba5t5ynOPCORW2AzSnXGJxkc1MKvgsu4Zen4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"Alane\",\r\n  \"sobrenome\": \"Rocha\",\r\n  \"email\": \"alane.rocha@equalpath.com\",\r\n  \"telefone\": \"11911110001\",\r\n  \"estado\": \"SP\",\r\n  \"dtCadastro\": \"2025-11-20\",\r\n  \"objetivoCarreira\": \"CRESCER_CARREIRA\",\r\n  \"statusPerfil\": \"INATIVO\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/usuarios/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"usuarios",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE/api/usuarios/2",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MzczNzA0MCwiZXhwIjoxNzYzNzQwNjQwfQ.T26VmQtba5t5ynOPCORW2AzSnXGJxkc1MKvgsu4Zen4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"Alane\",\r\n  \"sobrenome\": \"Rocha\",\r\n  \"email\": \"alane.rocha@equalpath.com\",\r\n  \"telefone\": \"11911110001\",\r\n  \"estado\": \"SP\",\r\n  \"dtCadastro\": \"2025-11-20\",\r\n  \"objetivoCarreira\": \"CRESCER_CARREIRA\",\r\n  \"statusPerfil\": \"INATIVO\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/usuarios/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"usuarios",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post/api/usuarios",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc1MjgyMSwiZXhwIjoxNzYzNzU2NDIxfQ.i6n33CJKc8qJTu0Iv8Vp_2q0QyYwsAwwNbHtufor0l4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"Mariana\",\r\n  \"sobrenome\": \"Almeida\",\r\n  \"email\": \"mariana.almeida@equalpath.com\",\r\n  \"telefone\": \"11998765432\",\r\n  \"estado\": \"SP\",\r\n  \"objetivoCarreira\": \"CRESCER_CARREIRA\",\r\n  \"statusPerfil\": \"ATIVO\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/usuarios",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"usuarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ERRO 404 -  usuarios não existe",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "codegirls",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/usuarios/9999",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"usuarios",
+						"9999"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ERRO 400 – Criação de Curso",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "codegirls",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"\",\r\n  \"sobrenome\": \"\",\r\n  \"email\": \"email-invalido\",\r\n  \"telefone\": \"123\",\r\n  \"estado\": \"\",\r\n  \"objetivoCarreira\": null,\r\n  \"statusPerfil\": null\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ERRO 403 - acesso negado",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/usuarios",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"usuarios"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "admin",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "admin",
+				"type": "string"
+			},
+			{
+				"key": "in",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
