@@ -1,10 +1,6 @@
 package com.equalpath.dto;
 
-import com.equalpath.domain.enums.CategoriaSkill;
-import com.equalpath.domain.enums.NivelTrilha;
-import com.equalpath.domain.enums.TipoSkill;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record SkillRequestDTO(
@@ -16,12 +12,15 @@ public record SkillRequestDTO(
         @Size(max = 500)
         String descricao,
 
-        @NotNull
-        NivelTrilha nivel,
+        @NotBlank
+        @Size(max = 40)
+        String nivel,
 
-        @NotNull
-        CategoriaSkill categoria,
+        @NotBlank
+        @Size(max = 40)
+        String categoria,
 
-        @NotNull
-        TipoSkill tipo
+        @NotBlank
+        @Size(max = 40)
+        String tipo
 ) {}

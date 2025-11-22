@@ -1,6 +1,5 @@
 package com.equalpath.dto;
 
-import com.equalpath.domain.enums.PlataformaCurso;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,8 +18,9 @@ public record CursoRecomendadoRequestDTO(
         @NotNull
         Long idTrilha,
 
-        @NotNull
-        PlataformaCurso plataforma,
+        @NotBlank
+        @Size(max = 40)
+        String plataforma,
 
         @NotNull
         @Min(1)

@@ -1,10 +1,7 @@
 package com.equalpath.dto;
 
-import com.equalpath.domain.enums.ObjetivoCarreira;
-import com.equalpath.domain.enums.StatusPerfil;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record UsuarioRequestDTO(
@@ -14,7 +11,7 @@ public record UsuarioRequestDTO(
         String nome,
 
         @NotBlank(message = "O sobrenome não pode ser vazio.")
-        @Size(max = 100, message = "O sobrenome deve ter no máximo 100 caracteres.") // alinha com a coluna
+        @Size(max = 100, message = "O sobrenome deve ter no máximo 100 caracteres.")
         String sobrenome,
 
         @NotBlank(message = "O email não pode ser vazio.")
@@ -30,9 +27,11 @@ public record UsuarioRequestDTO(
         @Size(max = 2, message = "O estado deve ter no máximo 2 caracteres (UF).")
         String estado,
 
-        @NotNull(message = "O objetivo de carreira é obrigatório.")
-        ObjetivoCarreira objetivoCarreira,
+        @NotBlank(message = "O objetivo de carreira é obrigatório.")
+        @Size(max = 50)
+        String objetivoCarreira,  // antes: ObjetivoCarreira
 
-        @NotNull(message = "O status do perfil é obrigatório.")
-        StatusPerfil statusPerfil
+        @NotBlank(message = "O status do perfil é obrigatório.")
+        @Size(max = 50)
+        String statusPerfil
 ) {}

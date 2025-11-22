@@ -1,8 +1,5 @@
 package com.equalpath.dto;
 
-import com.equalpath.domain.enums.ObjetivoCarreira;
-import com.equalpath.domain.enums.StatusPerfil;
-
 import java.time.LocalDate;
 
 public record UsuarioResponseDTO(
@@ -13,6 +10,6 @@ public record UsuarioResponseDTO(
         String telefone,
         String estado,
         LocalDate dtCadastro,
-        ObjetivoCarreira objetivoCarreira,
-        StatusPerfil statusPerfil
+        String objetivoCarreira,
+        String statusPerfil
 ) {}

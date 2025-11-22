@@ -1,9 +1,6 @@
 package com.equalpath.dto;
 
-import com.equalpath.domain.enums.NivelTrilha;
-import com.equalpath.domain.enums.StatusTrilha;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record TrilhaRequestDTO(
@@ -16,13 +13,15 @@ public record TrilhaRequestDTO(
         @Size(max = 500)
         String descricao,
 
-        @NotNull
-        NivelTrilha nivel,
+        @NotBlank
+        @Size(max = 40)
+        String nivel,
 
         @NotBlank
         @Size(max = 500)
         String objetivo,
 
-        @NotNull
-        StatusTrilha status
+        @NotBlank
+        @Size(max = 40)
+        String status
 ) {}
