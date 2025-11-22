@@ -1,6 +1,5 @@
 package com.equalpath.domain;
 
-import com.equalpath.domain.enums.PlataformaCurso;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,9 +28,8 @@ public class CursoRecomendado {
     @JoinColumn(name = "TRILHA_IDTRILHA", nullable = false)
     private Trilha trilha;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "PLATAFORMA", nullable = false, length = 100)
-    private PlataformaCurso plataforma;
+    private String plataforma; // AGORA STRING
 
     @Column(name = "DURACAOHORAS", nullable = false)
     private Integer duracaoHoras;

@@ -1,8 +1,5 @@
 package com.equalpath.domain;
 
-import com.equalpath.domain.enums.CategoriaSkill;
-import com.equalpath.domain.enums.NivelTrilha;
-import com.equalpath.domain.enums.TipoSkill;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,20 +28,17 @@ public class Skill {
     @Column(name = "DESCRICAO", nullable = false, length = 500)
     private String descricao;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "NIVEL", nullable = false, length = 20)
-    private NivelTrilha nivel;
+    @Column(name = "NIVEL", nullable = false, length = 40)
+    private String nivel;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "CATEGORIA", nullable = false, length = 50)
-    private CategoriaSkill categoria;
+    private String categoria;
 
     @Column(name = "ULTIMOACESSO", nullable = false)
     private LocalDate ultimoAcesso;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "TIPO", nullable = false, length = 50)
-    private TipoSkill tipo;
+    private String tipo;
 
     @OneToMany(mappedBy = "skill", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore

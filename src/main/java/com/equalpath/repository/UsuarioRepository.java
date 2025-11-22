@@ -1,10 +1,10 @@
 package com.equalpath.repository;
 
 import com.equalpath.domain.Usuario;
-import com.equalpath.domain.enums.StatusPerfil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.List;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
@@ -15,5 +15,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
             Pageable pageable
     );
 
-    List<Usuario> findByStatusPerfil(StatusPerfil statusPerfil);
+    List<Usuario> findByStatusPerfil(String statusPerfil);
 }

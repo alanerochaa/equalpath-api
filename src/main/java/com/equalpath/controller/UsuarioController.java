@@ -1,6 +1,5 @@
 package com.equalpath.controller;
 
-import com.equalpath.domain.enums.StatusPerfil;
 import com.equalpath.dto.MensagemResponseDTO;
 import com.equalpath.dto.UsuarioRequestDTO;
 import com.equalpath.dto.UsuarioResponseDTO;
@@ -16,8 +15,10 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.net.URI;
 import java.util.List;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -41,7 +42,7 @@ public class UsuarioController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso."),
             @ApiResponse(responseCode = "400", description = "Dados inválidos para criação do usuário."),
-            @ApiResponse(responseCode = "409", description = "Conflito de dados (por exemplo, e-mail já cadastrado)."),
+            @ApiResponse(responseCode = "409", description = "Conflito de dados (e-mail já cadastrado)."),
             @ApiResponse(responseCode = "500", description = "Erro interno ao criar usuário.")
     })
     public ResponseEntity<EntityModel<UsuarioResponseDTO>> criar(
@@ -64,12 +65,12 @@ public class UsuarioController {
     @GetMapping("/{id}")
     @Operation(
             summary = "Buscar usuário por ID",
-            description = "Recupera os dados de um usuário específico a partir do identificador único."
+            description = "Recupera os dados de um usuário específico pelo ID."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Usuário encontrado com sucesso."),
+            @ApiResponse(responseCode = "200", description = "Usuário encontrado."),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado."),
-            @ApiResponse(responseCode = "500", description = "Erro interno ao consultar usuário.")
+            @ApiResponse(responseCode = "500", description = "Erro ao consultar usuário.")
     })
     public ResponseEntity<EntityModel<UsuarioResponseDTO>> buscarPorId(@PathVariable Long id) {
         UsuarioResponseDTO response = usuarioService.buscarPorId(id);
@@ -85,17 +86,15 @@ public class UsuarioController {
 
     @GetMapping("/status")
     @Operation(
-            summary = "Listar usuários por status do perfil",
-            description = "Retorna todos os usuários filtrados pelo status do perfil (ATIVO, INATIVO ou PENDENTE). " +
-                    "Caso o parâmetro não seja informado, retorna todos os usuários."
+            summary = "Listar usuários por status",
+            description = "Filtra usuários por status (qualquer string). Caso vazio, retorna todos."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de usuários recuperada com sucesso."),
-            @ApiResponse(responseCode = "400", description = "Parâmetro de status inválido."),
+            @ApiResponse(responseCode = "200", description = "Usuários listados."),
             @ApiResponse(responseCode = "500", description = "Erro interno ao listar usuários.")
     })
     public ResponseEntity<CollectionModel<EntityModel<UsuarioResponseDTO>>> listarPorStatus(
-            @RequestParam(required = false) StatusPerfil statusPerfil
+            @RequestParam(required = false) String statusPerfil
     ) {
         List<UsuarioResponseDTO> usuarios = usuarioService.listarPorStatus(statusPerfil);
 
@@ -106,25 +105,25 @@ public class UsuarioController {
                 ))
                 .toList();
 
-        CollectionModel<EntityModel<UsuarioResponseDTO>> collectionModel =
+        CollectionModel<EntityModel<UsuarioResponseDTO>> collection =
                 CollectionModel.of(
                         content,
                         linkTo(methodOn(UsuarioController.class).listarPorStatus(statusPerfil)).withSelfRel()
                 );
 
-        return ResponseEntity.ok(collectionModel);
+        return ResponseEntity.ok(collection);
     }
 
     @PutMapping("/{id}")
     @Operation(
             summary = "Atualizar usuário",
-            description = "Atualiza os dados cadastrais de um usuário já existente."
+            description = "Atualiza os dados cadastrais de um usuário existente."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso."),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos para atualização."),
+            @ApiResponse(responseCode = "200", description = "Usuário atualizado."),
+            @ApiResponse(responseCode = "400", description = "Payload inválido."),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado."),
-            @ApiResponse(responseCode = "500", description = "Erro interno ao atualizar usuário.")
+            @ApiResponse(responseCode = "500", description = "Erro ao atualizar usuário.")
     })
     public ResponseEntity<EntityModel<UsuarioResponseDTO>> atualizar(
             @PathVariable Long id,
@@ -144,18 +143,18 @@ public class UsuarioController {
     @DeleteMapping("/{id}")
     @Operation(
             summary = "Excluir usuário",
-            description = "Remove o usuário da plataforma e desvincula suas relações com trilhas, áreas e skills."
+            description = "Remove o usuário e desvincula todas as relações auxiliares."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Usuário removido com sucesso."),
+            @ApiResponse(responseCode = "200", description = "Usuário excluído."),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado."),
-            @ApiResponse(responseCode = "500", description = "Erro interno ao excluir usuário.")
+            @ApiResponse(responseCode = "500", description = "Erro ao excluir usuário.")
     })
     public ResponseEntity<EntityModel<MensagemResponseDTO>> excluir(@PathVariable Long id) {
+
         usuarioService.excluir(id);
 
-        MensagemResponseDTO mensagem =
-                new MensagemResponseDTO("Usuário removido com sucesso.");
+        MensagemResponseDTO mensagem = new MensagemResponseDTO("Usuário removido com sucesso.");
 
         EntityModel<MensagemResponseDTO> resource = EntityModel.of(
                 mensagem,

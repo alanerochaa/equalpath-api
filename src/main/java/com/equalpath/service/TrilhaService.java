@@ -1,14 +1,15 @@
 package com.equalpath.service;
 
 import com.equalpath.domain.Trilha;
-import com.equalpath.domain.enums.StatusTrilha;
 import com.equalpath.dto.TrilhaRequestDTO;
 import com.equalpath.dto.TrilhaResponseDTO;
 import com.equalpath.exception.NotFoundException;
 import com.equalpath.repository.TrilhaRepository;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -19,14 +20,17 @@ public class TrilhaService {
     private final TrilhaRepository trilhaRepository;
 
     @Transactional
-    public TrilhaResponseDTO criar(TrilhaRequestDTO dto) {
+    public TrilhaResponseDTO criar(@NotNull TrilhaRequestDTO dto) {
+
+        String nivel = dto.nivel().trim().toUpperCase();
+        String status = dto.status().trim().toUpperCase();
 
         Trilha trilha = Trilha.builder()
                 .nome(dto.nome())
                 .descricao(dto.descricao())
-                .nivel(dto.nivel())
+                .nivel(nivel)
                 .objetivo(dto.objetivo())
-                .status(dto.status())
+                .status(status)
                 .dtCriacao(LocalDate.now())
                 .build();
 
@@ -39,11 +43,15 @@ public class TrilhaService {
     }
 
     @Transactional(readOnly = true)
-    public List<TrilhaResponseDTO> listar(StatusTrilha status) {
+    public List<TrilhaResponseDTO> listar(String status) {
 
-        List<Trilha> trilhas = (status != null)
-                ? trilhaRepository.findByStatus(status)
-                : trilhaRepository.findAll();
+        List<Trilha> trilhas;
+
+        if (status != null && !status.isBlank()) {
+            trilhas = trilhaRepository.findByStatus(status.trim().toUpperCase());
+        } else {
+            trilhas = trilhaRepository.findAll();
+        }
 
         return trilhas.stream()
                 .map(this::mapToResponse)
@@ -51,15 +59,15 @@ public class TrilhaService {
     }
 
     @Transactional
-    public TrilhaResponseDTO atualizar(Long id, TrilhaRequestDTO dto) {
+    public TrilhaResponseDTO atualizar(Long id, @NotNull TrilhaRequestDTO dto) {
 
         Trilha trilha = getById(id);
 
         trilha.setNome(dto.nome());
         trilha.setDescricao(dto.descricao());
-        trilha.setNivel(dto.nivel());
+        trilha.setNivel(dto.nivel().trim().toUpperCase());
         trilha.setObjetivo(dto.objetivo());
-        trilha.setStatus(dto.status());
+        trilha.setStatus(dto.status().trim().toUpperCase());
 
         return mapToResponse(trilhaRepository.save(trilha));
     }

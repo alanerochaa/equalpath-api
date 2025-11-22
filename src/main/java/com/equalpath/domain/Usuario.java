@@ -1,7 +1,5 @@
 package com.equalpath.domain;
 
-import com.equalpath.domain.enums.ObjetivoCarreira;
-import com.equalpath.domain.enums.StatusPerfil;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -16,37 +14,31 @@ import java.time.LocalDate;
 public class Usuario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usuario_seq")
-    @SequenceGenerator(
-            name = "usuario_seq",
-            sequenceName = "SEQ_USUARIO",
-            allocationSize = 1
-    )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_usuario")
+    @SequenceGenerator(name = "seq_usuario", sequenceName = "SEQ_USUARIO", allocationSize = 1)
     @Column(name = "IDUSUARIO")
     private Long id;
 
-    @Column(name = "NOME", length = 100, nullable = false)
+    @Column(name = "NOME", nullable = false, length = 100)
     private String nome;
 
-    @Column(name = "SOBRENOME", length = 100, nullable = false)
+    @Column(name = "SOBRENOME", nullable = false, length = 100)
     private String sobrenome;
 
-    @Column(name = "EMAIL", length = 150, nullable = false, unique = true)
+    @Column(name = "EMAIL", nullable = false, unique = true, length = 150)
     private String email;
 
-    @Column(name = "TELEFONE", length = 20)
+    @Column(name = "TELEFONE", nullable = false, length = 20)
     private String telefone;
 
-    @Column(name = "ESTADO", columnDefinition = "CHAR(2)", nullable = false)
+    @Column(name = "ESTADO", nullable = false, length = 2)
     private String estado;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "OBJETIVOCARREIRA", nullable = false, length = 500)
-    private ObjetivoCarreira objetivoCarreira;
+    @Column(name = "OBJETIVOCARREIRA", nullable = false, length = 50)
+    private String objetivoCarreira;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "STATUSPERFIL", nullable = false, length = 20)
-    private StatusPerfil statusPerfil;
+    @Column(name = "STATUSPERFIL", nullable = false, length = 50)
+    private String statusPerfil;
 
     @Column(name = "DTCADASTRO", nullable = false)
     private LocalDate dtCadastro;

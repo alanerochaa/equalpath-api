@@ -1,6 +1,5 @@
 package com.equalpath.controller;
 
-import com.equalpath.domain.enums.StatusTrilha;
 import com.equalpath.dto.MensagemResponseDTO;
 import com.equalpath.dto.TrilhaRequestDTO;
 import com.equalpath.dto.TrilhaResponseDTO;
@@ -16,8 +15,10 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.net.URI;
 import java.util.List;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -39,7 +40,7 @@ public class TrilhaController {
             description = "Registra uma nova trilha de carreira, vinculada a skills e perfil de usuário."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Trilha criado com sucesso."),
+            @ApiResponse(responseCode = "201", description = "Trilha criada com sucesso."),
             @ApiResponse(responseCode = "400", description = "Dados inválidos para criação.")
     })
     public ResponseEntity<EntityModel<TrilhaResponseDTO>> criar(
@@ -86,7 +87,7 @@ public class TrilhaController {
             description = "Retorna as trilhas cadastradas, com filtro opcional por status."
     )
     public ResponseEntity<CollectionModel<EntityModel<TrilhaResponseDTO>>> listar(
-            @RequestParam(required = false) StatusTrilha status
+            @RequestParam(required = false) String status
     ) {
         List<TrilhaResponseDTO> trilhas = trilhaService.listar(status);
 
@@ -112,7 +113,7 @@ public class TrilhaController {
             description = "Atualiza os metadados de uma trilha existente."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Trilha atualizada."),
+            @ApiResponse(responseCode = "200", description = "Trilha atualizado."),
             @ApiResponse(responseCode = "404", description = "Trilha não encontrada.")
     })
     public ResponseEntity<EntityModel<TrilhaResponseDTO>> atualizar(

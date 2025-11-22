@@ -1,7 +1,6 @@
 package com.equalpath.service;
 
 import com.equalpath.domain.Usuario;
-import com.equalpath.domain.enums.StatusPerfil;
 import com.equalpath.dto.UsuarioRequestDTO;
 import com.equalpath.dto.UsuarioResponseDTO;
 import com.equalpath.exception.NotFoundException;
@@ -15,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -29,21 +29,19 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponseDTO criar(@NotNull UsuarioRequestDTO dto) {
-        Usuario usuario = new Usuario();
 
-        usuario.setNome(dto.nome());
-        usuario.setSobrenome(dto.sobrenome());
-        usuario.setEmail(dto.email());
-        usuario.setTelefone(dto.telefone());
+        Usuario usuario = Usuario.builder()
+                .nome(dto.nome())
+                .sobrenome(dto.sobrenome())
+                .email(dto.email())
+                .telefone(dto.telefone())
+                .estado(dto.estado().toUpperCase())
+                .objetivoCarreira(dto.objetivoCarreira())
+                .statusPerfil(dto.statusPerfil())
+                .dtCadastro(LocalDate.now())
+                .build();
 
-        usuario.setEstado(dto.estado() != null ? dto.estado().toUpperCase() : null);
-
-        usuario.setObjetivoCarreira(dto.objetivoCarreira());
-        usuario.setStatusPerfil(dto.statusPerfil());
-        usuario.setDtCadastro(LocalDate.now()); // sistema define data de cadastro
-
-        Usuario salvo = usuarioRepository.save(usuario);
-        return mapToResponse(salvo);
+        return mapToResponse(usuarioRepository.save(usuario));
     }
 
     @Transactional(readOnly = true)
@@ -59,10 +57,9 @@ public class UsuarioService {
         Page<Usuario> pagina;
 
         if (nome != null && !nome.isBlank()) {
-            pagina = usuarioRepository
-                    .findByNomeContainingIgnoreCaseOrSobrenomeContainingIgnoreCase(
-                            nome, nome, pageable
-                    );
+            pagina = usuarioRepository.findByNomeContainingIgnoreCaseOrSobrenomeContainingIgnoreCase(
+                    nome, nome, pageable
+            );
         } else {
             pagina = usuarioRepository.findAll(pageable);
         }
@@ -71,14 +68,12 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
-    public List<UsuarioResponseDTO> listarPorStatus(StatusPerfil statusPerfil) {
-
+    public List<UsuarioResponseDTO> listarPorStatus(String statusPerfil) {
         List<Usuario> usuarios;
 
-        if (statusPerfil != null) {
+        if (statusPerfil != null && !statusPerfil.isBlank()) {
             usuarios = usuarioRepository.findByStatusPerfil(statusPerfil);
         } else {
-            // se não vier status, devolve tudo (sem filtro)
             usuarios = usuarioRepository.findAll();
         }
 
@@ -97,17 +92,16 @@ public class UsuarioService {
         usuario.setSobrenome(dto.sobrenome());
         usuario.setEmail(dto.email());
         usuario.setTelefone(dto.telefone());
-        usuario.setEstado(dto.estado() != null ? dto.estado().toUpperCase() : null);
+        usuario.setEstado(dto.estado().toUpperCase());
         usuario.setObjetivoCarreira(dto.objetivoCarreira());
         usuario.setStatusPerfil(dto.statusPerfil());
 
-        Usuario atualizado = usuarioRepository.save(usuario);
-        return mapToResponse(atualizado);
+        return mapToResponse(usuarioRepository.save(usuario));
     }
-
 
     @Transactional
     public void excluir(Long id) {
+
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuário não encontrado: " + id));
 
@@ -118,8 +112,7 @@ public class UsuarioService {
         usuarioRepository.delete(usuario);
     }
 
-
-    private UsuarioResponseDTO mapToResponse(@NotNull Usuario usuario) {
+    private UsuarioResponseDTO mapToResponse(Usuario usuario) {
         return new UsuarioResponseDTO(
                 usuario.getId(),
                 usuario.getNome(),

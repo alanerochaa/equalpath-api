@@ -1,12 +1,10 @@
 package com.equalpath.repository;
 
 import com.equalpath.domain.Trilha;
-import com.equalpath.domain.enums.StatusTrilha;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 
 public interface TrilhaRepository extends JpaRepository<Trilha, Long> {
 
-    List<Trilha> findByStatus(StatusTrilha status);
+    List<Trilha> findByStatus(String status);
 }

@@ -2,7 +2,6 @@ package com.equalpath.service;
 
 import com.equalpath.domain.CursoRecomendado;
 import com.equalpath.domain.Trilha;
-import com.equalpath.domain.enums.PlataformaCurso;
 import com.equalpath.dto.CursoRecomendadoRequestDTO;
 import com.equalpath.dto.CursoRecomendadoResponseDTO;
 import com.equalpath.exception.NotFoundException;
@@ -12,6 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -31,7 +31,7 @@ public class CursoRecomendadoService {
                 .nome(dto.nome())
                 .url(dto.url())
                 .trilha(trilha)
-                .plataforma(dto.plataforma())
+                .plataforma(dto.plataforma()) // STRING
                 .duracaoHoras(dto.duracaoHoras())
                 .build();
 
@@ -39,11 +39,11 @@ public class CursoRecomendadoService {
     }
 
     @Transactional(readOnly = true)
-    public List<CursoRecomendadoResponseDTO> listarPorTrilha(Long idTrilha, PlataformaCurso plataforma) {
+    public List<CursoRecomendadoResponseDTO> listarPorTrilha(Long idTrilha, String plataforma) {
 
         List<CursoRecomendado> cursos;
 
-        if (plataforma != null) {
+        if (plataforma != null && !plataforma.isBlank()) {
             cursos = cursoRepository.findByTrilha_IdAndPlataforma(idTrilha, plataforma);
         } else {
             cursos = cursoRepository.findByTrilha_Id(idTrilha);
@@ -70,7 +70,7 @@ public class CursoRecomendadoService {
         curso.setNome(dto.nome());
         curso.setUrl(dto.url());
         curso.setTrilha(trilha);
-        curso.setPlataforma(dto.plataforma());
+        curso.setPlataforma(dto.plataforma()); // STRING
         curso.setDuracaoHoras(dto.duracaoHoras());
 
         return toResponse(cursoRepository.save(curso));
@@ -93,7 +93,7 @@ public class CursoRecomendadoService {
                 curso.getUrl(),
                 curso.getTrilha().getId(),
                 curso.getTrilha().getNome(),
-                curso.getPlataforma(),
+                curso.getPlataforma(),   // STRING
                 curso.getDuracaoHoras()
         );
     }

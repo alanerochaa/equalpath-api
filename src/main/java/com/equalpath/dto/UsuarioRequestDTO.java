@@ -6,32 +6,32 @@ import jakarta.validation.constraints.Size;
 
 public record UsuarioRequestDTO(
 
-        @NotBlank(message = "O nome não pode ser vazio.")
-        @Size(max = 100, message = "O nome deve ter no máximo 100 caracteres.")
+        @NotBlank
+        @Size(max = 100)
         String nome,
 
-        @NotBlank(message = "O sobrenome não pode ser vazio.")
-        @Size(max = 100, message = "O sobrenome deve ter no máximo 100 caracteres.")
+        @NotBlank
+        @Size(max = 100)
         String sobrenome,
 
-        @NotBlank(message = "O email não pode ser vazio.")
-        @Email(message = "Formato de email inválido.")
-        @Size(max = 150, message = "O email deve ter no máximo 150 caracteres.")
+        @NotBlank
+        @Email
+        @Size(max = 150)
         String email,
 
-        @NotBlank(message = "O telefone não pode ser vazio.")
-        @Size(max = 20, message = "O telefone deve ter no máximo 20 caracteres.")
+        @NotBlank
+        @Size(max = 20)
         String telefone,
 
-        @NotBlank(message = "O estado (UF) é obrigatório.")
-        @Size(max = 2, message = "O estado deve ter no máximo 2 caracteres (UF).")
+        @NotBlank
+        @Size(max = 2)
         String estado,
 
-        @NotBlank(message = "O objetivo de carreira é obrigatório.")
+        @NotBlank
         @Size(max = 50)
-        String objetivoCarreira,  // antes: ObjetivoCarreira
+        String objetivoCarreira,
 
-        @NotBlank(message = "O status do perfil é obrigatório.")
+        @NotBlank
         @Size(max = 50)
         String statusPerfil
 ) {}

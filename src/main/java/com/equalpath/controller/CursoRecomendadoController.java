@@ -1,6 +1,5 @@
 package com.equalpath.controller;
 
-import com.equalpath.domain.enums.PlataformaCurso;
 import com.equalpath.dto.CursoRecomendadoRequestDTO;
 import com.equalpath.dto.CursoRecomendadoResponseDTO;
 import com.equalpath.dto.MensagemResponseDTO;
@@ -16,10 +15,8 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 import java.util.List;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -100,7 +97,7 @@ public class CursoRecomendadoController {
     })
     public ResponseEntity<CollectionModel<EntityModel<CursoRecomendadoResponseDTO>>> listarPorTrilha(
             @RequestParam Long idTrilha,
-            @RequestParam(required = false) PlataformaCurso plataforma
+            @RequestParam(required = false) String plataforma
     ) {
         List<CursoRecomendadoResponseDTO> cursos =
                 cursoService.listarPorTrilha(idTrilha, plataforma);
@@ -169,7 +166,6 @@ public class CursoRecomendadoController {
 
         EntityModel<MensagemResponseDTO> resource = EntityModel.of(
                 mensagem,
-                // Link genérico para consulta de cursos por trilha; idTrilha será informado pelo consumidor
                 linkTo(methodOn(CursoRecomendadoController.class)
                         .listarPorTrilha(null, null)).withRel("cursos_por_trilha")
         );

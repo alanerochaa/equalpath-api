@@ -236,29 +236,47 @@ equalpath-api/
 ```
    git clone https://github.com/alanerochaa/equalpath-api.git
 ```
-2. Build e execução com Maven
+2. Build e execução com Maven 
+A API sobe em:
 ```
 http://localhost:8080/swagger-ui/index.html
 ```
 
-## 🌐 URLs Principais da API
-## 🌐 URLs Principais da API
+## 🌐 Endpoints da API 
 
-| Finalidade                   | URL                                                                                          | Descrição                                                                                         |
-| --------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| 🏠 Endpoint inicial (Home)  | [`http://localhost:8080/`](http://localhost:8080/)                                           | Verifica se a EqualPath API está operacional e direciona para o Swagger ou rota `/home`.         |
-| 📊 Endpoint JSON (/home)    | [`http://localhost:8080/home`](http://localhost:8080/home)                                   | Retorna mensagem de status em JSON (com HATEOAS) e links para recursos principais da plataforma. |
-| 📖 Documentação Swagger UI  | [`http://localhost:8080/swagger-ui/index.html`](http://localhost:8080/swagger-ui/index.html) | Interface interativa gerada pelo Springdoc OpenAPI para testar todos os endpoints REST.          |
-| 🔐 Autenticação (login)     | [`http://localhost:8080/api/auth/login`](http://localhost:8080/api/auth/login)               | Endpoint responsável pela autenticação e geração do token JWT.                                   |
+### 🖥️ Ambiente Local
 
-## 📡 Endpoints 
+| Finalidade      | URL                                                                                        | Descrição                                         |
+| --------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------- |
+| 🏠 Home (Root)  | [http://localhost:8080/](http://localhost:8080/)                                           | Verifica a disponibilidade da API local.          |
+| 📊 JSON (/home) | [http://localhost:8080/home](http://localhost:8080/home)                                   | Endpoint com status da aplicação + links HATEOAS. |
+| 📖 Swagger UI   | [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) | Playground interativo dos endpoints REST.         |
+| 🔐 Auth (Login) | [http://localhost:8080/api/auth/login](http://localhost:8080/api/auth/login)               | Autenticação com geração de token JWT.            |
+
+
+### ☁️ Ambiente de Produção (Render)
+| Finalidade      | URL                                                                                                                  | Descrição                                                      |
+| --------------- | -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| 🏠 Home (Root)  | [https://equalpath-api.onrender.com/](https://equalpath-api.onrender.com/)                                           | Verifica se a API está operacional no ambiente produtivo.      |
+| 📊 JSON (/home) | [https://equalpath-api.onrender.com/home](https://equalpath-api.onrender.com/home)                                   | Endpoint de status + HATEOAS rodando em produção.              |
+| 📖 Swagger UI   | [https://equalpath-api.onrender.com/swagger-ui/index.html](https://equalpath-api.onrender.com/swagger-ui/index.html) | Interface completa para teste dos endpoints em ambiente cloud. |
+| 🔐 Auth (Login) | [https://equalpath-api.onrender.com/api/auth/login](https://equalpath-api.onrender.com/api/auth/login)               | Autenticação e emissão do JWT em produção.                     |
+
+
+## 🧭 Visão Geral dos Endpoints da Plataforma EqualPath
 
 ### 🔐 Autenticação – Fluxo JWT da EqualPath
+| Recurso                  | Descrição                                                                  | Método / Endpoint            | 
+| ------------------------ | -------------------------------------------------------------------------- | ---------------------------- |  
+| **Autenticação (Login)** | Geração do token JWT para acesso aos recursos protegidos da EqualPath API. | **POST – `/api/auth/login`** | 
 
-| Método | Endpoint          | Descrição                             |
-| ------ | ----------------- | ------------------------------------- |
-| `POST` | `/api/auth/login` | Autenticar usuário e gerar token JWT. |
-
+✔ ️ Autenticação – Exemplo (Login)
+```
+{
+"username": "admin",
+"password": "codegirls"
+}
+```
 
 ### 👤 Usuário
 
@@ -270,6 +288,18 @@ http://localhost:8080/swagger-ui/index.html
 | `PUT`    | `/api/usuarios/{id}` | Atualizar dados cadastrais.           |
 | `DELETE` | `/api/usuarios/{id}` | Excluir usuário.                      |
 
+✔️ Usuário – Exemplo (Criar novo usuário)
+```
+{
+  "nome": "Julia",
+  "sobrenome": "Silva",
+  "email": "julia.silva@example.com",
+  "telefone": "11999998888",
+  "estado": "SP",
+  "objetivoCarreira": "DESENVOLVEDORA_BACKEND",
+  "statusPerfil": "ATIVO"
+}
+```
 
 ### 🧠 Skills
 | Método   | Endpoint           | Descrição                  |
@@ -280,6 +310,13 @@ http://localhost:8080/swagger-ui/index.html
 | `PUT`    | `/api/skills/{id}` | Atualizar skill existente. |
 | `DELETE` | `/api/skills/{id}` | Excluir skill.             |
 
+✔️ Skill – Exemplo (Criar skill)
+```
+{
+  "nome": "Java",
+  "descricao": "Conhecimento em desenvolvimento backend com Java"
+}
+```
 
 ### 🛣️ Trilhas
 | Método   | Endpoint            | Descrição                      |
@@ -290,6 +327,16 @@ http://localhost:8080/swagger-ui/index.html
 | `PUT`    | `/api/trilhas/{id}` | Atualizar trilha existente.    |
 | `DELETE` | `/api/trilhas/{id}` | Excluir trilha.                |
 
+✔️ Trilha – Exemplo (Criar trilha)
+```
+{
+  "nome": "Backend Java",
+  "descricao": "Trilha focada em desenvolvimento backend com Spring Boot.",
+  "nivel": "INTERMEDIARIO",
+  "objetivo": "DESENVOLVEDORA_BACKEND",
+  "status": "ATIVO"
+}
+```
 
 ### 📚 Cursos Recomendados
 | Método   | Endpoint           | Descrição                                |
@@ -300,14 +347,26 @@ http://localhost:8080/swagger-ui/index.html
 | `PUT`    | `/api/cursos/{id}` | Atualizar curso recomendado.             |
 | `DELETE` | `/api/cursos/{id}` | Excluir curso recomendado.               |
 
-
+✔️ Curso – Exemplo (Criar curso recomendado)
+```
+{
+  "nome": "Formação Spring Boot",
+  "url": "https://alura.com.br/spring",
+  "idTrilha": 1,
+  "plataforma": "ALURA",
+  "duracaoHoras": 40
+}
+```
 
 ### 🧭 Recomendações
 | Método | Endpoint                                 | Descrição                                                               |
 | ------ | ---------------------------------------- | ----------------------------------------------------------------------- |
 | `GET`  | `/api/recomendacoes/usuario/{idUsuario}` | Recomendar trilhas com base nas skills do usuário e score de aderência. |
+✔️ Recomendação – Exemplo (Consumir endpoint)
+```
+GET /api/recomendacoes/usuario/1
 
-
+```
 
 ## 💡 Exemplo de Requisição – Criação de Usuário
 ```

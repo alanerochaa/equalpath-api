@@ -1,7 +1,5 @@
 package com.equalpath.domain;
 
-import com.equalpath.domain.enums.NivelTrilha;
-import com.equalpath.domain.enums.StatusTrilha;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,16 +28,14 @@ public class Trilha {
     @Column(name = "DESCRICAO", nullable = false, length = 500)
     private String descricao;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "NIVEL", nullable = false, length = 20)
-    private NivelTrilha nivel;
+    @Column(name = "NIVEL", nullable = false, length = 40)
+    private String nivel;
 
     @Column(name = "OBJETIVO", nullable = false, length = 500)
     private String objetivo;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "STATUS", nullable = false, length = 20)
-    private StatusTrilha status;
+    @Column(name = "STATUS", nullable = false, length = 40)
+    private String status;
 
     @Column(name = "DTCRIACAO", nullable = false)
     private LocalDate dtCriacao;
