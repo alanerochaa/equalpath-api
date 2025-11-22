@@ -1,5 +1,6 @@
 package com.equalpath.controller;
 
+import com.equalpath.domain.enums.StatusTrilha;
 import com.equalpath.dto.MensagemResponseDTO;
 import com.equalpath.dto.TrilhaRequestDTO;
 import com.equalpath.dto.TrilhaResponseDTO;
@@ -9,6 +10,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
@@ -84,12 +87,18 @@ public class TrilhaController {
     @GetMapping
     @Operation(
             summary = "Listar trilhas",
-            description = "Retorna as trilhas cadastradas, com filtro opcional por status."
+            description = "Retorna as trilhas cadastradas, com filtro opcional por status (ATIVA/INATIVA)."
     )
     public ResponseEntity<CollectionModel<EntityModel<TrilhaResponseDTO>>> listar(
-            @RequestParam(required = false) String status
+            @Parameter(
+                    description = "Status da trilha (opcional). Valores possíveis: ATIVA, INATIVA.",
+                    schema = @Schema(implementation = StatusTrilha.class)
+            )
+            @RequestParam(required = false) StatusTrilha status
     ) {
-        List<TrilhaResponseDTO> trilhas = trilhaService.listar(status);
+        String statusFiltro = (status != null ? status.name() : null);
+
+        List<TrilhaResponseDTO> trilhas = trilhaService.listar(statusFiltro);
 
         List<EntityModel<TrilhaResponseDTO>> content = trilhas.stream()
                 .map(t -> EntityModel.of(
@@ -113,7 +122,7 @@ public class TrilhaController {
             description = "Atualiza os metadados de uma trilha existente."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Trilha atualizado."),
+            @ApiResponse(responseCode = "200", description = "Trilha atualizada."),
             @ApiResponse(responseCode = "404", description = "Trilha não encontrada.")
     })
     public ResponseEntity<EntityModel<TrilhaResponseDTO>> atualizar(

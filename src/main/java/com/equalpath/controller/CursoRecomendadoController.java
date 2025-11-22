@@ -1,5 +1,6 @@
 package com.equalpath.controller;
 
+import com.equalpath.domain.enums.PlataformaCurso;
 import com.equalpath.dto.CursoRecomendadoRequestDTO;
 import com.equalpath.dto.CursoRecomendadoResponseDTO;
 import com.equalpath.dto.MensagemResponseDTO;
@@ -9,14 +10,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.net.URI;
 import java.util.List;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -97,10 +102,17 @@ public class CursoRecomendadoController {
     })
     public ResponseEntity<CollectionModel<EntityModel<CursoRecomendadoResponseDTO>>> listarPorTrilha(
             @RequestParam Long idTrilha,
-            @RequestParam(required = false) String plataforma
+            @Parameter(
+                    description = "Plataforma do curso (opcional). Valores possíveis: UDEMY, ALURA, COURSERA, DIO.",
+                    schema = @Schema(implementation = PlataformaCurso.class)
+            )
+            @RequestParam(required = false) PlataformaCurso plataforma
     ) {
+        // Fazemos o bridge enum -> String para não quebrar o service
+        String plataformaFiltro = (plataforma != null ? plataforma.name() : null);
+
         List<CursoRecomendadoResponseDTO> cursos =
-                cursoService.listarPorTrilha(idTrilha, plataforma);
+                cursoService.listarPorTrilha(idTrilha, plataformaFiltro);
 
         List<EntityModel<CursoRecomendadoResponseDTO>> content = cursos.stream()
                 .map(c -> EntityModel.of(

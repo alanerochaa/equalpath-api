@@ -1,5 +1,6 @@
 package com.equalpath.controller;
 
+import com.equalpath.domain.enums.StatusPerfil;
 import com.equalpath.dto.MensagemResponseDTO;
 import com.equalpath.dto.UsuarioRequestDTO;
 import com.equalpath.dto.UsuarioResponseDTO;
@@ -9,6 +10,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
@@ -87,16 +90,22 @@ public class UsuarioController {
     @GetMapping("/status")
     @Operation(
             summary = "Listar usuários por status",
-            description = "Filtra usuários por status (qualquer string). Caso vazio, retorna todos."
+            description = "Filtra usuários por status do perfil (ATIVO, INATIVO, PENDENTE). Caso vazio, retorna todos."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Usuários listados."),
             @ApiResponse(responseCode = "500", description = "Erro interno ao listar usuários.")
     })
     public ResponseEntity<CollectionModel<EntityModel<UsuarioResponseDTO>>> listarPorStatus(
-            @RequestParam(required = false) String statusPerfil
+            @Parameter(
+                    description = "Status do perfil do usuário (opcional). Valores possíveis: ATIVO, INATIVO, PENDENTE.",
+                    schema = @Schema(implementation = StatusPerfil.class)
+            )
+            @RequestParam(required = false) StatusPerfil statusPerfil
     ) {
-        List<UsuarioResponseDTO> usuarios = usuarioService.listarPorStatus(statusPerfil);
+        String statusFiltro = (statusPerfil != null ? statusPerfil.name() : null);
+
+        List<UsuarioResponseDTO> usuarios = usuarioService.listarPorStatus(statusFiltro);
 
         List<EntityModel<UsuarioResponseDTO>> content = usuarios.stream()
                 .map(u -> EntityModel.of(
