@@ -8,6 +8,10 @@ import com.equalpath.repository.UsuarioAreaRepository;
 import com.equalpath.repository.UsuarioRepository;
 import com.equalpath.repository.UsuarioSkillRepository;
 import com.equalpath.repository.UsuarioTrilhaRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.ParameterMode;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.StoredProcedureQuery;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -27,21 +32,48 @@ public class UsuarioService {
     private final UsuarioTrilhaRepository usuarioTrilhaRepository;
     private final UsuarioAreaRepository usuarioAreaRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Transactional
     public UsuarioResponseDTO criar(@NotNull UsuarioRequestDTO dto) {
 
-        Usuario usuario = Usuario.builder()
-                .nome(dto.nome())
-                .sobrenome(dto.sobrenome())
-                .email(dto.email())
-                .telefone(dto.telefone())
-                .estado(dto.estado().toUpperCase())
-                .objetivoCarreira(dto.objetivoCarreira())
-                .statusPerfil(dto.statusPerfil())
-                .dtCadastro(LocalDate.now())
-                .build();
+        // Data de cadastro definida na camada de serviço
+        LocalDate hoje = LocalDate.now();
 
-        return mapToResponse(usuarioRepository.save(usuario));
+        // Chamada da procedure PRC_INS_USUARIO
+        StoredProcedureQuery sp = entityManager
+                .createStoredProcedureQuery("PRC_INS_USUARIO");
+
+        sp.registerStoredProcedureParameter("p_idUsuario",        Long.class,   ParameterMode.IN);
+        sp.registerStoredProcedureParameter("p_nome",             String.class, ParameterMode.IN);
+        sp.registerStoredProcedureParameter("p_sobrenome",        String.class, ParameterMode.IN);
+        sp.registerStoredProcedureParameter("p_email",            String.class, ParameterMode.IN);
+        sp.registerStoredProcedureParameter("p_telefone",         String.class, ParameterMode.IN);
+        sp.registerStoredProcedureParameter("p_dtCadastro",       Date.class,   ParameterMode.IN);
+        sp.registerStoredProcedureParameter("p_estado",           String.class, ParameterMode.IN);
+        sp.registerStoredProcedureParameter("p_objetivoCarreira", String.class, ParameterMode.IN);
+        sp.registerStoredProcedureParameter("p_statusPerfil",     String.class, ParameterMode.IN);
+
+        sp.setParameter("p_idUsuario", null); // deixa a SEQ_USUARIO cuidar do ID
+        sp.setParameter("p_nome", dto.nome());
+        sp.setParameter("p_sobrenome", dto.sobrenome());
+        sp.setParameter("p_email", dto.email());
+        sp.setParameter("p_telefone", dto.telefone());
+        sp.setParameter("p_dtCadastro", Date.valueOf(hoje));
+        sp.setParameter("p_estado", dto.estado().toUpperCase());
+        sp.setParameter("p_objetivoCarreira", dto.objetivoCarreira());
+        sp.setParameter("p_statusPerfil", dto.statusPerfil());
+
+        sp.execute();
+
+        // Após a procedure, buscamos o registro já persistido no Oracle
+        Usuario usuario = usuarioRepository.findByEmail(dto.email())
+                .orElseThrow(() -> new IllegalStateException(
+                        "Usuário não encontrado após inserção via procedure: " + dto.email()
+                ));
+
+        return mapToResponse(usuario);
     }
 
     @Transactional(readOnly = true)

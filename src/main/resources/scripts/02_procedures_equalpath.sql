@@ -10,20 +10,22 @@ CREATE OR REPLACE PROCEDURE PRC_INS_USUARIO (
     p_email            IN VARCHAR2,
     p_telefone         IN VARCHAR2,
     p_dtCadastro       IN DATE,
-    p_estado           IN CHAR,
+    p_estado           IN VARCHAR2,
     p_objetivoCarreira IN VARCHAR2,
     p_statusPerfil     IN VARCHAR2
 ) AS
-    v_id NUMBER;
+    v_id     NUMBER;
+    v_estado VARCHAR2(2);
 BEGIN
-    v_id := NVL(p_idUsuario, SEQ_USUARIO.NEXTVAL);
+    v_id     := NVL(p_idUsuario, SEQ_USUARIO.NEXTVAL);
+    v_estado := SUBSTR(TRIM(p_estado), 1, 2);  -- garante 2 caracteres
 
     INSERT INTO USUARIO (
         idUsuario, nome, sobrenome, email, telefone,
         dtCadastro, estado, objetivoCarreira, statusPerfil
     ) VALUES (
         v_id, p_nome, p_sobrenome, p_email, p_telefone,
-        p_dtCadastro, p_estado, p_objetivoCarreira, p_statusPerfil
+        p_dtCadastro, v_estado, p_objetivoCarreira, p_statusPerfil
     );
 
 EXCEPTION
@@ -204,75 +206,69 @@ END;
 /
  
 /* =====================================================================
-   CARGA AJUSTADA — TUDO DENTRO DE UM ÚNICO BEGIN/END
+   CARGA INICIAL — CONSUMINDO SEQUENCES (IDS = NULL)
    ===================================================================== */
 
 BEGIN
-
     /* ===================== USUARIO ===================== */
-    PRC_INS_USUARIO(1,'Alane','Rocha','alane.rocha@equalpath.com','11911110001',SYSDATE,'SP','CRESCER_CARREIRA','ATIVO');
-    PRC_INS_USUARIO(2,'Anna','Bonfim','anna.bonfim@equalpath.com','11911110002',SYSDATE,'SP','CRESCER_CARREIRA','ATIVO');
-    PRC_INS_USUARIO(3,'Maria','Penas','maria.penas@equalpath.com','11911110003',SYSDATE,'SP','CRESCER_CARREIRA','PENDENTE');
-    PRC_INS_USUARIO(4,'Lucas','Oliveira','lucas.oliveira@equalpath.com','21922220004',SYSDATE,'RJ','CRESCER_CARREIRA','ATIVO');
-    PRC_INS_USUARIO(5,'Karina','Santos','karina.santos@equalpath.com','31933330005',SYSDATE,'MG','CRESCER_CARREIRA','ATIVO');
-    PRC_INS_USUARIO(6,'Vanilton','Lima','vanilton.lima@equalpath.com','71944440006',SYSDATE,'BA','MIGRAR_AREA','INATIVO');
-    PRC_INS_USUARIO(7,'Joao','Pereira','joao.pereira@equalpath.com','41955550007',SYSDATE,'PR','MIGRAR_AREA','ATIVO');
-    PRC_INS_USUARIO(8,'Bruna','Costa','bruna.costa@equalpath.com','61966660008',SYSDATE,'DF','MIGRAR_AREA','ATIVO');
-    PRC_INS_USUARIO(9,'Rafael','Souza','rafael.souza@equalpath.com','81977770009',SYSDATE,'PE','RECOLOCACAO','PENDENTE');
-    PRC_INS_USUARIO(10,'Paula','Ferreira','paula.ferreira@equalpath.com','11988880010',SYSDATE,'SP','PRIMEIRO_EMPREGO','ATIVO');
-
+    PRC_INS_USUARIO(NULL,'Alane','Rocha','alane.rocha@equalpath.com','11911110001',SYSDATE,'SP','CRESCER_CARREIRA','ATIVO');
+    PRC_INS_USUARIO(NULL,'Anna','Bonfim','anna.bonfim@equalpath.com','11911110002',SYSDATE,'SP','CRESCER_CARREIRA','ATIVO');
+    PRC_INS_USUARIO(NULL,'Maria','Penas','maria.penas@equalpath.com','11911110003',SYSDATE,'SP','CRESCER_CARREIRA','PENDENTE');
+    PRC_INS_USUARIO(NULL,'Lucas','Oliveira','lucas.oliveira@equalpath.com','21922220004',SYSDATE,'RJ','CRESCER_CARREIRA','ATIVO');
+    PRC_INS_USUARIO(NULL,'Karina','Santos','karina.santos@equalpath.com','31933330005',SYSDATE,'MG','CRESCER_CARREIRA','ATIVO');
+    PRC_INS_USUARIO(NULL,'Vanilton','Lima','vanilton.lima@equalpath.com','71944440006',SYSDATE,'BA','MIGRAR_AREA','INATIVO');
+    PRC_INS_USUARIO(NULL,'Joao','Pereira','joao.pereira@equalpath.com','41955550007',SYSDATE,'PR','MIGRAR_AREA','ATIVO');
+    PRC_INS_USUARIO(NULL,'Bruna','Costa','bruna.costa@equalpath.com','61966660008',SYSDATE,'DF','MIGRAR_AREA','ATIVO');
+    PRC_INS_USUARIO(NULL,'Rafael','Souza','rafael.souza@equalpath.com','81977770009',SYSDATE,'PE','RECOLOCACAO','PENDENTE');
+    PRC_INS_USUARIO(NULL,'Paula','Ferreira','paula.ferreira@equalpath.com','11988880010',SYSDATE,'SP','PRIMEIRO_EMPREGO','ATIVO');
 
     /* ===================== AREA ===================== */
-    PRC_INS_AREA(1,'Backend','Desenvolvimento de APIs e serviços',SYSDATE);
-    PRC_INS_AREA(2,'Dados','Engenharia e análise de dados',SYSDATE);
-    PRC_INS_AREA(3,'Frontend','Interfaces web e experiência do usuário',SYSDATE);
-    PRC_INS_AREA(4,'DevOps','CI/CD, automação e infraestrutura como código',SYSDATE);
-    PRC_INS_AREA(5,'Mobile','Aplicativos Android e iOS',SYSDATE);
-    PRC_INS_AREA(6,'UX/UI','Pesquisa com usuário e design',SYSDATE);
-    PRC_INS_AREA(7,'Cloud','Arquiteturas em nuvem',SYSDATE);
-    PRC_INS_AREA(8,'Seguranca','Segurança da informação',SYSDATE);
-    PRC_INS_AREA(9,'Produto','Gestão de produto digital',SYSDATE);
-    PRC_INS_AREA(10,'QA','Qualidade e automação de testes',SYSDATE);
-
+    PRC_INS_AREA(NULL,'Backend','Desenvolvimento de APIs e serviços',SYSDATE);
+    PRC_INS_AREA(NULL,'Dados','Engenharia e análise de dados',SYSDATE);
+    PRC_INS_AREA(NULL,'Frontend','Interfaces web e experiência do usuário',SYSDATE);
+    PRC_INS_AREA(NULL,'DevOps','CI/CD, automação e infraestrutura como código',SYSDATE);
+    PRC_INS_AREA(NULL,'Mobile','Aplicativos Android e iOS',SYSDATE);
+    PRC_INS_AREA(NULL,'UX/UI','Pesquisa com usuário e design',SYSDATE);
+    PRC_INS_AREA(NULL,'Cloud','Arquiteturas em nuvem',SYSDATE);
+    PRC_INS_AREA(NULL,'Seguranca','Segurança da informação',SYSDATE);
+    PRC_INS_AREA(NULL,'Produto','Gestão de produto digital',SYSDATE);
+    PRC_INS_AREA(NULL,'QA','Qualidade e automação de testes',SYSDATE);
 
     /* ===================== SKILL ===================== */
-    PRC_INS_SKILL(1,'Java','Linguagem OO para backend','INTERMEDIARIO','BACKEND',SYSDATE-1,'TECNICA');
-    PRC_INS_SKILL(2,'Spring Boot','APIs REST em Java','INTERMEDIARIO','BACKEND',SYSDATE-2,'TECNICA');
-    PRC_INS_SKILL(3,'SQL','Consultas relacionais','INTERMEDIARIO','DADOS',SYSDATE-3,'TECNICA');
-    PRC_INS_SKILL(4,'PL/SQL','Procedures e funções Oracle','BASICO','DADOS',SYSDATE-4,'TECNICA');
-    PRC_INS_SKILL(5,'C#','Backend .NET','BASICO','BACKEND',SYSDATE-5,'TECNICA');
-    PRC_INS_SKILL(6,'.NET','APIs .NET','BASICO','BACKEND',SYSDATE-6,'TECNICA');
-    PRC_INS_SKILL(7,'React','SPAs com React','INTERMEDIARIO','FRONTEND',SYSDATE-7,'TECNICA');
-    PRC_INS_SKILL(8,'Angular','SPA em TypeScript','BASICO','FRONTEND',SYSDATE-8,'TECNICA');
-    PRC_INS_SKILL(9,'Python','Dados e automação','INTERMEDIARIO','DADOS',SYSDATE-9,'TECNICA');
-    PRC_INS_SKILL(10,'Power BI','Dashboards','BASICO','DADOS',SYSDATE-10,'TECNICA');
-
+    PRC_INS_SKILL(NULL,'Java','Linguagem OO para backend','INTERMEDIARIO','BACKEND',SYSDATE-1,'TECNICA');
+    PRC_INS_SKILL(NULL,'Spring Boot','APIs REST em Java','INTERMEDIARIO','BACKEND',SYSDATE-2,'TECNICA');
+    PRC_INS_SKILL(NULL,'SQL','Consultas relacionais','INTERMEDIARIO','DADOS',SYSDATE-3,'TECNICA');
+    PRC_INS_SKILL(NULL,'PL/SQL','Procedures e funções Oracle','BASICO','DADOS',SYSDATE-4,'TECNICA');
+    PRC_INS_SKILL(NULL,'C#','Backend .NET','BASICO','BACKEND',SYSDATE-5,'TECNICA');
+    PRC_INS_SKILL(NULL,'.NET','APIs .NET','BASICO','BACKEND',SYSDATE-6,'TECNICA');
+    PRC_INS_SKILL(NULL,'React','SPAs com React','INTERMEDIARIO','FRONTEND',SYSDATE-7,'TECNICA');
+    PRC_INS_SKILL(NULL,'Angular','SPA em TypeScript','BASICO','FRONTEND',SYSDATE-8,'TECNICA');
+    PRC_INS_SKILL(NULL,'Python','Dados e automação','INTERMEDIARIO','DADOS',SYSDATE-9,'TECNICA');
+    PRC_INS_SKILL(NULL,'Power BI','Dashboards','BASICO','DADOS',SYSDATE-10,'TECNICA');
 
     /* ===================== TRILHA ===================== */
-    PRC_INS_TRILHA(1,'Backend Java Jr','APIs REST com Java','INTERMEDIARIO','Backend em squads','ATIVA',SYSDATE);
-    PRC_INS_TRILHA(2,'Data Analytics','Fundamentos de dados','INICIANTE','BI e relatórios','ATIVA',SYSDATE);
-    PRC_INS_TRILHA(3,'Frontend React','SPAs com React','INTERMEDIARIO','UI moderna','ATIVA',SYSDATE);
-    PRC_INS_TRILHA(4,'DevOps Essentials','CI/CD','INICIANTE','Pipelines automatizados','ATIVA',SYSDATE);
-    PRC_INS_TRILHA(5,'Mobile Kotlin','Apps Android','INICIANTE','Publicar apps','ATIVA',SYSDATE);
-    PRC_INS_TRILHA(6,'UX Research','Pesquisa com usuários','INICIANTE','Experiência de uso','ATIVA',SYSDATE);
-    PRC_INS_TRILHA(7,'Cloud Practitioner','Fundamentos cloud','INICIANTE','Serviços principais','ATIVA',SYSDATE);
-    PRC_INS_TRILHA(8,'Cyber Security','Fundamentos de segurança','INICIANTE','Mitigar riscos','ATIVA',SYSDATE);
-    PRC_INS_TRILHA(9,'QA Automation','Testes automatizados','INTERMEDIARIO','Aumentar cobertura','ATIVA',SYSDATE);
-    PRC_INS_TRILHA(10,'Product Management','Gestão de produto','INTERMEDIARIO','Discovery e roadmap','ATIVA',SYSDATE);
-
+    PRC_INS_TRILHA(NULL,'Backend Java Jr','APIs REST com Java','INTERMEDIARIO','Backend em squads','ATIVA',SYSDATE);
+    PRC_INS_TRILHA(NULL,'Data Analytics','Fundamentos de dados','INICIANTE','BI e relatórios','ATIVA',SYSDATE);
+    PRC_INS_TRILHA(NULL,'Frontend React','SPAs com React','INTERMEDIARIO','UI moderna','ATIVA',SYSDATE);
+    PRC_INS_TRILHA(NULL,'DevOps Essentials','CI/CD','INICIANTE','Pipelines automatizados','ATIVA',SYSDATE);
+    PRC_INS_TRILHA(NULL,'Mobile Kotlin','Apps Android','INICIANTE','Publicar apps','ATIVA',SYSDATE);
+    PRC_INS_TRILHA(NULL,'UX Research','Pesquisa com usuários','INICIANTE','Experiência de uso','ATIVA',SYSDATE);
+    PRC_INS_TRILHA(NULL,'Cloud Practitioner','Fundamentos cloud','INICIANTE','Serviços principais','ATIVA',SYSDATE);
+    PRC_INS_TRILHA(NULL,'Cyber Security','Fundamentos de segurança','INICIANTE','Mitigar riscos','ATIVA',SYSDATE);
+    PRC_INS_TRILHA(NULL,'QA Automation','Testes automatizados','INTERMEDIARIO','Aumentar cobertura','ATIVA',SYSDATE);
+    PRC_INS_TRILHA(NULL,'Product Management','Gestão de produto','INTERMEDIARIO','Discovery e roadmap','ATIVA',SYSDATE);
 
     /* ===================== CURSO_RECOMENDADO ===================== */
-    PRC_INS_CURSO_RECOMENDADO(1,'Spring Boot Essentials','https://curso.com/spring-boot',1,'UDEMY',20);
-    PRC_INS_CURSO_RECOMENDADO(2,'Java OO na Pratica','https://curso.com/java-oo',1,'ALURA',16);
-    PRC_INS_CURSO_RECOMENDADO(3,'Introducao a Data Analytics','https://curso.com/data-analytics',2,'COURSERA',12);
-    PRC_INS_CURSO_RECOMENDADO(4,'SQL para Analise de Dados','https://curso.com/sql-dados',2,'ALURA',10);
-    PRC_INS_CURSO_RECOMENDADO(5,'React do Zero ao Deploy','https://curso.com/react',3,'UDEMY',24);
-    PRC_INS_CURSO_RECOMENDADO(6,'Pipeline CI/CD com GitHub Actions','https://curso.com/devops-ci-cd',4,'DIO',8);
-    PRC_INS_CURSO_RECOMENDADO(7,'Kotlin para Android','https://curso.com/kotlin-android',5,'ALURA',18);
-    PRC_INS_CURSO_RECOMENDADO(8,'UX Research na Pratica','https://curso.com/ux-research',6,'COURSERA',14);
-    PRC_INS_CURSO_RECOMENDADO(9,'Fundamentos de Cloud','https://curso.com/cloud',7,'DIO',10);
-    PRC_INS_CURSO_RECOMENDADO(10,'Automacao de Testes com Selenium','https://curso.com/selenium',9,'UDEMY',12);
-
+    PRC_INS_CURSO_RECOMENDADO(NULL,'Spring Boot Essentials','https://curso.com/spring-boot',1,'UDEMY',20);
+    PRC_INS_CURSO_RECOMENDADO(NULL,'Java OO na Pratica','https://curso.com/java-oo',1,'ALURA',16);
+    PRC_INS_CURSO_RECOMENDADO(NULL,'Introducao a Data Analytics','https://curso.com/data-analytics',2,'COURSERA',12);
+    PRC_INS_CURSO_RECOMENDADO(NULL,'SQL para Analise de Dados','https://curso.com/sql-dados',2,'ALURA',10);
+    PRC_INS_CURSO_RECOMENDADO(NULL,'React do Zero ao Deploy','https://curso.com/react',3,'UDEMY',24);
+    PRC_INS_CURSO_RECOMENDADO(NULL,'Pipeline CI/CD com GitHub Actions','https://curso.com/devops-ci-cd',4,'DIO',8);
+    PRC_INS_CURSO_RECOMENDADO(NULL,'Kotlin para Android','https://curso.com/kotlin-android',5,'ALURA',18);
+    PRC_INS_CURSO_RECOMENDADO(NULL,'UX Research na Pratica','https://curso.com/ux-research',6,'COURSERA',14);
+    PRC_INS_CURSO_RECOMENDADO(NULL,'Fundamentos de Cloud','https://curso.com/cloud',7,'DIO',10);
+    PRC_INS_CURSO_RECOMENDADO(NULL,'Automacao de Testes com Selenium','https://curso.com/selenium',9,'UDEMY',12);
 
     /* ===================== USUARIO_AREA ===================== */
     PRC_INS_USUARIO_AREA(1,1);
@@ -286,7 +282,6 @@ BEGIN
     PRC_INS_USUARIO_AREA(8,6);
     PRC_INS_USUARIO_AREA(9,8);
 
-
     /* ===================== USUARIO_TRILHA ===================== */
     PRC_INS_USUARIO_TRILHA(1,1);
     PRC_INS_USUARIO_TRILHA(2,1);
@@ -298,7 +293,6 @@ BEGIN
     PRC_INS_USUARIO_TRILHA(8,6);
     PRC_INS_USUARIO_TRILHA(9,8);
     PRC_INS_USUARIO_TRILHA(10,9);
-
 
     /* ===================== USUARIO_SKILL ===================== */
     PRC_INS_USUARIO_SKILL(1,1);
@@ -312,7 +306,6 @@ BEGIN
     PRC_INS_USUARIO_SKILL(8,7);
     PRC_INS_USUARIO_SKILL(9,10);
 
-
     /* ===================== TRILHA_SKILL_NECESSARIA ===================== */
     PRC_INS_TRILHA_SKILL_NEC(1,1);
     PRC_INS_TRILHA_SKILL_NEC(1,2);
@@ -324,7 +317,6 @@ BEGIN
     PRC_INS_TRILHA_SKILL_NEC(5,5);
     PRC_INS_TRILHA_SKILL_NEC(7,9);
     PRC_INS_TRILHA_SKILL_NEC(9,3);
-
 END;
 /
 

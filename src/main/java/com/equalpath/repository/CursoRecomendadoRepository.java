@@ -9,6 +9,5 @@ public interface CursoRecomendadoRepository extends JpaRepository<CursoRecomenda
 
     List<CursoRecomendado> findByTrilha_Id(Long idTrilha);
 
-    // antes recebia PlataformaCurso, agora String
     List<CursoRecomendado> findByTrilha_IdAndPlataforma(Long idTrilha, String plataforma);
 }

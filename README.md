@@ -301,6 +301,32 @@ http://localhost:8080/swagger-ui/index.html
 }
 ```
 
+### Resposta:
+```
+{
+  "id": 13,
+  "nome": "Julia",
+  "sobrenome": "Silva",
+  "email": "julia.silva@example.com",
+  "telefone": "11999998888",
+  "estado": "SP",
+  "dtCadastro": "2025-11-22",
+  "objetivoCarreira": "DESENVOLVEDORA_BACKEND",
+  "statusPerfil": "ATIVO",
+  "_links": {
+    "self": {
+      "href": "http://localhost:8080/api/usuarios/13"
+    },
+    "usuarios": {
+      "href": "http://localhost:8080/api/usuarios/status{?statusPerfil}",
+      "templated": true
+    }
+  }
+}
+```
+
+
+
 ### 🧠 Skills
 | Método   | Endpoint           | Descrição                  |
 | -------- | ------------------ | -------------------------- |
@@ -313,8 +339,31 @@ http://localhost:8080/swagger-ui/index.html
 ✔️ Skill – Exemplo (Criar skill)
 ```
 {
-  "nome": "Java",
-  "descricao": "Conhecimento em desenvolvimento backend com Java"
+  "nome": "Java Avançado",
+  "descricao": "Domínio de recursos avançados da linguagem, incluindo Streams, Optional, Generics e boas práticas de arquitetura.",
+  "nivel": "AVANCADO",
+  "categoria": "BACKEND",
+  "tipo": "TECNICA"
+}
+```
+### Resposta:
+```
+{
+  "id": 11,
+  "nome": "Java Avançado",
+  "descricao": "Domínio de recursos avançados da linguagem, incluindo Streams, Optional, Generics e boas práticas de arquitetura.",
+  "nivel": "AVANCADO",
+  "categoria": "BACKEND",
+  "tipo": "TECNICA",
+  "ultimoAcesso": "2025-11-22",
+  "_links": {
+    "self": {
+      "href": "http://localhost:8080/api/skills/11"
+    },
+    "skills": {
+      "href": "http://localhost:8080/api/skills"
+    }
+  }
 }
 ```
 
@@ -338,6 +387,28 @@ http://localhost:8080/swagger-ui/index.html
 }
 ```
 
+### Resposta:
+```
+{
+  "id": 11,
+  "nome": "Backend Java",
+  "descricao": "Trilha focada em desenvolvimento backend com Spring Boot.",
+  "nivel": "INTERMEDIARIO",
+  "objetivo": "DESENVOLVEDORA_BACKEND",
+  "status": "ATIVO",
+  "dtCriacao": "2025-11-22",
+  "_links": {
+    "self": {
+      "href": "http://localhost:8080/api/trilhas/11"
+    },
+    "trilhas": {
+      "href": "http://localhost:8080/api/trilhas{?status}",
+      "templated": true
+    }
+  }
+}
+```
+
 ### 📚 Cursos Recomendados
 | Método   | Endpoint           | Descrição                                |
 | -------- | ------------------ | ---------------------------------------- |
@@ -358,6 +429,27 @@ http://localhost:8080/swagger-ui/index.html
 }
 ```
 
+### Resposta:
+```
+{
+  "id": 11,
+  "nome": "Formação Spring Boot",
+  "url": "https://alura.com.br/spring",
+  "idTrilha": 1,
+  "nomeTrilha": "Backend Java Jr",
+  "plataforma": "ALURA",
+  "duracaoHoras": 40,
+  "_links": {
+    "self": {
+      "href": "http://localhost:8080/api/cursos/11"
+    },
+    "cursos_da_trilha": {
+      "href": "http://localhost:8080/api/cursos?idTrilha=1{&plataforma}",
+      "templated": true
+    }
+  }
+}
+```
 ### 🧭 Recomendações
 | Método | Endpoint                                 | Descrição                                                               |
 | ------ | ---------------------------------------- | ----------------------------------------------------------------------- |
@@ -367,35 +459,98 @@ http://localhost:8080/swagger-ui/index.html
 GET /api/recomendacoes/usuario/1
 
 ```
-
-## 💡 Exemplo de Requisição – Criação de Usuário
-```
-POST /api/usuarios
-Content-Type: application/json
-Authorization: Bearer <token>
-
-{
-"nome": "Júlia",
-"sobrenome": "Silva",
-"email": "julia.silva@equalpath.com",
-"telefone": "11999999999",
-"estado": "SP",
-"objetivoCarreira": "DESENVOLVEDOR_BACKEND",
-"statusPerfil": "ATIVO"
-}
-```
-
-### Resposta (exemplo simplificado):
+### Resposta:
 ```
 {
-"id": 1,
-"nome": "Júlia",
-"sobrenome": "Silva",
-"email": "julia.silva@equalpath.com",
-"estado": "SP",
-"objetivoCarreira": "DESENVOLVEDOR_BACKEND",
-"statusPerfil": "ATIVO",
-"dtCadastro": "2025-11-21"
+  "_embedded": {
+    "recomendacaoResponseDTOList": [
+      {
+        "idTrilha": 1,
+        "nomeTrilha": "Backend Java Jr",
+        "percentualAderencia": 100,
+        "skillsUsuarioPossui": [
+          "Java",
+          "Spring Boot"
+        ],
+        "skillsNecessarias": [
+          "Spring Boot",
+          "Java"
+        ]
+      },
+      {
+        "idTrilha": 2,
+        "nomeTrilha": "Data Analytics",
+        "percentualAderencia": 0,
+        "skillsUsuarioPossui": [],
+        "skillsNecessarias": [
+          "SQL",
+          "Power BI"
+        ]
+      },
+      {
+        "idTrilha": 3,
+        "nomeTrilha": "Frontend React",
+        "percentualAderencia": 0,
+        "skillsUsuarioPossui": [],
+        "skillsNecessarias": [
+          "React"
+        ]
+      },
+      {
+        "idTrilha": 4,
+        "nomeTrilha": "DevOps Essentials",
+        "percentualAderencia": 0,
+        "skillsUsuarioPossui": [],
+        "skillsNecessarias": [
+          "Python",
+          "PL/SQL"
+        ]
+      },
+      {
+        "idTrilha": 5,
+        "nomeTrilha": "Mobile Kotlin",
+        "percentualAderencia": 0,
+        "skillsUsuarioPossui": [],
+        "skillsNecessarias": [
+          "C#"
+        ]
+      },
+      {
+        "idTrilha": 7,
+        "nomeTrilha": "Cloud Practitioner",
+        "percentualAderencia": 0,
+        "skillsUsuarioPossui": [],
+        "skillsNecessarias": [
+          "Python"
+        ]
+      },
+      {
+        "idTrilha": 9,
+        "nomeTrilha": "QA Automation",
+        "percentualAderencia": 0,
+        "skillsUsuarioPossui": [],
+        "skillsNecessarias": [
+          "SQL"
+        ]
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "http://localhost:8080/api/recomendacoes/usuario/1"
+    },
+    "usuario": {
+      "href": "http://localhost:8080/api/usuarios/1"
+    },
+    "trilhas": {
+      "href": "http://localhost:8080/api/trilhas{?status}",
+      "templated": true
+    },
+    "cursos": {
+      "href": "http://localhost:8080/api/cursos?idTrilha={idTrilha}{&plataforma}",
+      "templated": true
+    }
+  }
 }
 ```
 
@@ -453,6 +608,19 @@ A coleção de requisições utilizada para validação da EqualPath API está d
 Basta importar o arquivo no Postman para executar todos os cenários de teste (CRUD, autenticação JWT e validações de erro).
 
 
+## 🎬 Vídeos de Apresentação
+ ### Pitch  – EqualPath (Visão do Projeto)
+
+Este vídeo apresenta, o propósito estratégico da EqualPath, cobrindo o contexto do problema, proposta de valor, , arquitetura macro e visão de impacto social.
+
+* 📺 Assista aqui:
+*  https://www.youtube.com/watch?v=Rf0naht3hk4
+
+### Demonstração Técnica – EqualPath API (Swagger + Banco + Testes e app)
+Esta demonstração apresenta a execução dos principais endpoints no Swagger, validações, cenários de CRUD e evidências de persistência no PostgreSQL e, ao final, uma visualização rápida do aplicativo.
+
+* 📺 Assista aqui:
+* 
 
 ## 👩‍💻 Integrantes e Responsabilidades
 
