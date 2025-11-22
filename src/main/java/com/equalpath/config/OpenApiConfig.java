@@ -24,7 +24,8 @@ import org.springframework.context.annotation.Configuration;
                 )
         ),
         servers = {
-                @Server(url = "http://localhost:8080", description = "Ambiente local")
+                // Usa o mesmo host de onde o Swagger está sendo servido (local ou Render)
+                @Server(url = "/", description = "Ambiente atual (local / Render)")
         }
 )
 @SecurityScheme(
