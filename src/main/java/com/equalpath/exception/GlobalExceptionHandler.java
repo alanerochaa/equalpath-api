@@ -9,7 +9,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +16,6 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 404 – Not Found
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException ex, WebRequest request) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -31,7 +29,6 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // 400 – Validation Error
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex,
                                                           WebRequest request) {
@@ -55,7 +52,6 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // 400 – JSON malformado / erro de enum / corpo inválido
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleUnreadable(HttpMessageNotReadableException ex,
                                                           WebRequest request) {
@@ -64,7 +60,6 @@ public class GlobalExceptionHandler {
                 ? ex.getMostSpecificCause().getMessage()
                 : ex.getMessage();
 
-        // tratamento elegante pra quando o erro for enum inválido
         if (msg.contains("not one of the values accepted")) {
             msg = "Valor fornecido é inválido para o campo ENUM.";
         }
@@ -80,7 +75,6 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // 409 – Data conflict (unique, foreign key, etc)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleConflict(DataIntegrityViolationException ex,
                                                         WebRequest request) {
@@ -107,7 +101,6 @@ public class GlobalExceptionHandler {
     }
 
 
-    // 500 – Generic Internal Error
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex, WebRequest request) {
 

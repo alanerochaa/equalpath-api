@@ -38,10 +38,8 @@ public class UsuarioService {
     @Transactional
     public UsuarioResponseDTO criar(@NotNull UsuarioRequestDTO dto) {
 
-        // Data de cadastro definida na camada de serviço
         LocalDate hoje = LocalDate.now();
 
-        // Chamada da procedure PRC_INS_USUARIO
         StoredProcedureQuery sp = entityManager
                 .createStoredProcedureQuery("PRC_INS_USUARIO");
 
@@ -67,7 +65,6 @@ public class UsuarioService {
 
         sp.execute();
 
-        // Após a procedure, buscamos o registro já persistido no Oracle
         Usuario usuario = usuarioRepository.findByEmail(dto.email())
                 .orElseThrow(() -> new IllegalStateException(
                         "Usuário não encontrado após inserção via procedure: " + dto.email()

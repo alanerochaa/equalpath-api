@@ -620,8 +620,8 @@ Este vídeo apresenta, o propósito estratégico da EqualPath, cobrindo o contex
 Esta demonstração apresenta a execução dos principais endpoints no Swagger, validações, cenários de CRUD e evidências de persistência no PostgreSQL e, ao final, uma visualização rápida do aplicativo.
 
 * 📺 Assista aqui:
-* 
-
+* https://www.youtube.com/watch?v=0BvSd__zMnM
+ 
 ## 👩‍💻 Integrantes e Responsabilidades
 
 | Nome Completo | RM | Função no Projeto | GitHub |

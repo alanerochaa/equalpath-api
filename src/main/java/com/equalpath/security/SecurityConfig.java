@@ -52,7 +52,6 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // público: raiz da aplicação, home HATEOAS e erro
                         .requestMatchers("/", "/home", "/home/**", "/error").permitAll()
 
                         // público: swagger / openapi
