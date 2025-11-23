@@ -16,7 +16,6 @@ public class AuthUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        // Usuário fixo só pra autenticação
         if (!"admin".equalsIgnoreCase(username)) {
             throw new UsernameNotFoundException("Usuário não encontrado: " + username);
         }
